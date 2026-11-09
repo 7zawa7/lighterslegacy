@@ -159,6 +159,7 @@ footer .sep{margin:0 8px}
 #jmap{height:340px;border-radius:16px;border:3px solid var(--ink);margin-bottom:10px}
 .jmap-wrap h3{font-family:var(--head);font-weight:400;text-transform:uppercase;font-size:22px;margin:0 0 10px}
 @media (prefers-reduced-motion:reduce){.flame{animation:none}.entry,.entry .bar{transition:none}}
+#jmap .leaflet-tile-pane{filter:grayscale(1) contrast(1.05)}
 [hidden]{display:none!important}
 @media (max-width:420px){.row{grid-template-columns:1fr}.steps li{font-size:13px;padding:10px 4px}}
 </style>
@@ -339,6 +340,7 @@ footer .sep{margin:0 8px}
       <li><b>Google Maps Platform / Places</b> (Google Ireland Ltd.): Wenn du deine Stadt suchst, werden deine Eingabe und deine IP-Adresse an Google übertragen. Eine Übermittlung in die USA ist möglich; Google ist nach dem EU-US Data Privacy Framework zertifiziert.</li>
       <li><b>Instagram</b> (Meta Platforms Ireland Ltd.): Dort veröffentlichen wir ausgewählte Meldungen, wenn du eingewilligt hast.</li>
       <li><b>Hosting</b> dieser Seite über enzolutions.</li>
+      <li><b>OpenStreetMap</b>: Die Karte nach dem Absenden lädt Kartenbilder von den Servern der OpenStreetMap Foundation; dabei wird deine IP-Adresse übertragen.</li>
       <li><b>Spracherkennung</b> (country.is, ersatzweise GeoJS): Beim Öffnen der Seite wird deine IP-Adresse kurz an diesen Dienst geschickt, um das Land zu erkennen und die Seite in deiner Sprache anzuzeigen. Wir speichern weder IP-Adresse noch Land.</li>
       <li><b>Open-Meteo</b> (Schweiz): Wenn du deine Stadt eintippst, wird der Suchbegriff an Open-Meteo geschickt, um passende Orte und deren Koordinaten zu finden.</li>
       <li><b>Google Fonts</b> (Google Ireland Ltd.): Die Schriften dieser Seite werden von Google-Servern geladen; dabei wird deine IP-Adresse an Google übertragen.</li>
@@ -636,7 +638,7 @@ function drawJMap(by){
   function draw(){
     if(!ok()) return; $("jmapWrap").hidden=false;
     if(!jmap){ jmap=L.map("jmap",{worldCopyJump:true,scrollWheelZoom:false}).setView([30,10],2);
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{attribution:"&copy; OpenStreetMap, &copy; CARTO",maxZoom:10}).addTo(jmap); }
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:12}).addTo(jmap); }
     Object.keys(by).forEach(function(n){ var pts=by[n].filter(function(r){return r.lat!=null}).map(function(r){return [r.lat,r.lng]}); if(!pts.length) return;
       if(pts.length>1) L.polyline(pts,{color:"#FF2E93",weight:2,opacity:.5}).addTo(jmap);
       L.circleMarker(pts[pts.length-1],{radius:5,color:"#000",weight:1,fillColor:"#E8FF00",fillOpacity:1}).bindTooltip("#"+n).addTo(jmap); });

@@ -99,6 +99,7 @@ dialog::backdrop{background:rgba(0,0,0,.7)}
 .thumbs img{width:96px;height:96px;object-fit:cover;border-radius:8px;border:2px solid var(--line)}
 .ev label.post{display:inline-flex;gap:8px;align-items:center;font-weight:400;margin:6px 0 0}
 .ev label.post input{width:20px;height:20px;min-height:0}
+#map .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6)}
 [hidden]{display:none!important}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
 </style>
@@ -338,7 +339,7 @@ function leafletCss(){ var t=document.createElement("div"); t.className="leaflet
 function drawMap(seen){
   if(typeof L==="undefined" || !leafletCss()){ $("mapnote").textContent="Die Karte lädt erst, wenn das Cockpit auf deiner eigenen Domain läuft."; return; }
   if(!map){ map=window.L.map("map",{worldCopyJump:true}).setView([25,10],2);
-    window.L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{attribution:'&copy; OpenStreetMap, &copy; CARTO',maxZoom:12}).addTo(map); }
+    window.L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:12}).addTo(map); }
   if(layer) layer.remove(); layer=window.L.layerGroup().addTo(map);
   var col={active:"#FF2E93",ended:"#9A9A9A",gone:"#FF7A3D"};
   seen.forEach(function(x){
