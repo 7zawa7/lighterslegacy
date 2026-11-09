@@ -67,6 +67,8 @@ input,select{width:100%;font:inherit;color:#fff;background:#0F0F0F;border:2px so
 .rev .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .rev .nr{font-family:var(--head);font-size:26px;line-height:1;color:var(--yellow)}
 .rev .chip{display:inline-block;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;background:#2A2A2A;color:#EEE}
+.spl{max-width:220px;max-height:120px;object-fit:contain;background:#fff;border-radius:10px;padding:8px}
+.rev .meta{font-size:14px;line-height:1.5;color:#CCC}.rev .meta a{color:#fff}
 .rev .chip.st{background:var(--pink);color:var(--ink)}
 .rev .date{margin-left:auto;color:var(--muted);font-size:13px}
 .rev .place{font-weight:700;font-size:14px}
@@ -134,6 +136,11 @@ dialog::backdrop{background:rgba(0,0,0,.7)}
     <h2>Zu prüfen <span id="revCount" class="pill st-refill">0</span></h2>
     <p class="mapnote" style="margin:0 0 12px">Neue Meldungen sind erst öffentlich (Karte, Hall of Flame), wenn du sie freigibst. Ablehnen löscht die Meldung.</p>
     <div id="revList"></div>
+  </section>
+  <section class="panel review" id="sponsPanel">
+    <h2>Sponsoren <span id="spCount" class="pill st-refill">0</span></h2>
+    <p class="mapnote" style="margin:0 0 12px">Anfragen von der Website. Erst klären (E-Mail, Rechnung/Zahlung), dann freigeben: Name und Logo erscheinen dann auf der Seite. Löschen entfernt Anfrage und Logo.</p>
+    <div id="spList"></div>
   </section>
   <div class="kpis" id="kpis"></div>
   <div class="grid">
@@ -212,7 +219,10 @@ async function start(){
       var r=await api("/rest/v1/reports?select=*&order=created_at.asc"); if(!r.ok){ throw new Error("auth"); }
       REPORTS=await r.json();
       await signPhotos([].concat.apply([],REPORTS.map(function(x){return x.photos||[]})));
+      try{ var rs=await api("/rest/v1/sponsors?select=*&order=created_at.desc"); SPONS=rs.ok?await rs.json():[]; await signLogos(SPONS.filter(function(s){return s.logo_path&&!s.logo_public}).map(function(s){return s.logo_path})); }catch(_){ SPONS=[]; }
     }
+    if(demo) SPONS=[];
+    drawSpons();
     render();
   }catch(e){ token=null; ss("ll-token",null); $("dash").hidden=true; $("hbtns").hidden=true; $("loginView").hidden=false; $("loginErr").textContent="Bitte (neu) einloggen."; }
 }
@@ -244,6 +254,52 @@ var COLORS={active:"#E8FF00",gone:"#FF7A3D",ended:"#9A9A9A",new:"#333"};
 var LABELS={active:"Unterwegs",gone:"Verschollen",ended:"Beendet",new:"Noch nie gemeldet"};
 
 var map=null, layer=null;
+var SPONS=[], SLOGO={};
+async function signLogos(list){
+  if(!list.length) return;
+  var r=await api("/storage/v1/object/sign/sponsor-uploads",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({expiresIn:3600,paths:list})});
+  if(!r.ok) return; (await r.json()).forEach(function(x){ if(x.signedURL) SLOGO[x.path]=base()+"/storage/v1"+x.signedURL; });
+}
+var TIERS={spark:"Spark – Name",flame:"Flame – Logo",legend:"Legend – großes Logo + Shoutout"};
+function drawSpons(){
+  var open=SPONS.filter(function(s){return !s.approved}).length; $("spCount").textContent=open;
+  $("spList").innerHTML=SPONS.length?SPONS.map(function(s){
+    var logo=s.logo_public||SLOGO[s.logo_path]||"";
+    var web=s.website?(/^https?:/i.test(s.website)?s.website:"https://"+s.website):"";
+    return '<article class="rev">'+
+      '<div class="top"><span class="nr" style="font-size:22px">'+esc(s.company)+'</span><span class="chip st">'+esc(TIERS[s.tier]||s.tier)+'</span><span class="chip">'+(s.approved?"online":"offen")+'</span><span class="date">'+fmt(s.created_at)+'</span></div>'+
+      '<div class="meta">'+(s.contact?esc(s.contact)+' · ':'')+'<a href="mailto:'+esc(s.email)+'">'+esc(s.email)+'</a>'+(web?' · <a href="'+esc(web)+'" target="_blank" rel="noopener">'+esc(s.website)+'</a>':'')+'</div>'+
+      (s.message?'<div class="storyblock">'+esc(s.message)+'</div>':'')+
+      (logo?'<img class="spl" src="'+esc(logo)+'" alt="Logo '+esc(s.company)+'">':'<div class="meta">kein Logo hochgeladen</div>')+
+      '<div class="act">'+(s.approved?'<button class="btn" type="button" data-hide="'+esc(s.id)+'">Ausblenden</button>':'<button class="btn yel" type="button" data-sok="'+esc(s.id)+'">Freigeben</button>')+'<button class="btn" type="button" data-sdel="'+esc(s.id)+'">Löschen</button></div>'+
+    '</article>'}).join(""):'<p style="margin:0;color:#888">Noch keine Anfragen.</p>';
+}
+$("spList").addEventListener("click",async function(e){
+  var b=e.target.closest("button"); if(!b) return;
+  var id=b.dataset.sok||b.dataset.hide||b.dataset.sdel, s=SPONS.find(function(x){return String(x.id)===id}); if(!s) return;
+  if(b.dataset.sdel && !b.dataset.sure){ b.dataset.sure="1"; b.textContent="Wirklich löschen?"; return; }
+  b.disabled=true;
+  try{
+    var q="/rest/v1/sponsors?id=eq."+encodeURIComponent(id), J={"Content-Type":"application/json",Prefer:"return=minimal"};
+    if(b.dataset.sok){
+      var pub=s.logo_public;
+      if(s.logo_path && !pub){
+        var c=await api("/storage/v1/object/copy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({bucketId:"sponsor-uploads",sourceKey:s.logo_path,destinationBucket:"sponsor-logos",destinationKey:s.logo_path})});
+        if(!c.ok && c.status!==409 && c.status!==400) throw 1;
+        pub=base()+"/storage/v1/object/public/sponsor-logos/"+s.logo_path;
+      }
+      var r=await api(q,{method:"PATCH",headers:J,body:JSON.stringify({approved:true,logo_public:pub||null})}); if(!r.ok) throw 1;
+      s.approved=true; s.logo_public=pub||null;
+    } else if(b.dataset.hide){
+      var r2=await api(q,{method:"PATCH",headers:J,body:JSON.stringify({approved:false})}); if(!r2.ok) throw 1; s.approved=false;
+    } else {
+      if(s.logo_path){ await api("/storage/v1/object/sponsor-uploads",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({prefixes:[s.logo_path]})}); await api("/storage/v1/object/sponsor-logos",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({prefixes:[s.logo_path]})}); }
+      var r3=await api(q,{method:"DELETE"}); if(!r3.ok) throw 1;
+      SPONS=SPONS.filter(function(x){return x!==s});
+    }
+    drawSpons();
+  }catch(err){ b.disabled=false; b.textContent="Fehler – nochmal"; }
+});
 function drawReview(){
   var q=REPORTS.filter(function(r){return !r.verified});
   $("revCount").textContent=q.length;
