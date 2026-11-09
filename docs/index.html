@@ -97,9 +97,9 @@ footer .sep{margin:0 8px}
 .mini .cap{height:22px;margin:0 8px;background:linear-gradient(90deg,#9A9A9A,#E6E6E6 45%,#8A8A8A);border:2px solid var(--ink);border-bottom:0;border-radius:6px 6px 0 0;position:relative}
 .mini .wheel{position:absolute;right:6px;top:-9px;width:16px;height:16px;border-radius:50%;background:repeating-linear-gradient(90deg,#555 0 2px,#999 2px 4px);border:2px solid var(--ink)}
 .mini .body{height:136px;background:var(--pink);border:2px solid var(--ink);border-radius:8px 8px 18px 18px;padding:8px 7px;display:flex;flex-direction:column;justify-content:space-between;font-family:var(--head);color:var(--ink);line-height:.95}
-.mini .m1{font-size:10px}.mini .m2{font-family:var(--body);font-weight:700;font-size:8px}
+.mini .m1{font-size:9px;background:var(--ink);border-radius:4px;padding:3px 4px;line-height:.9}.mini .m2{font-family:var(--body);font-weight:700;font-size:8px}
 .mini .m3{font-size:30px;position:relative;letter-spacing:-1px}
-.mini .m4{font-family:var(--body);font-weight:700;font-size:9px;position:relative}
+.mini .m4{font-family:var(--body);font-weight:700;font-size:9px;position:relative;background:var(--ink);color:var(--yellow);border-radius:3px;padding:2px 3px;align-self:flex-start}
 .ring{position:absolute;inset:-4px -5px;border:3px solid var(--yellow);border-radius:8px;box-shadow:0 0 0 2px var(--ink);opacity:0}
 .r1{animation:ringA 4.4s infinite}.r2{animation:ringB 4.4s infinite}
 @keyframes ringA{0%,4%{opacity:0;transform:scale(1.25)}10%,40%{opacity:1;transform:scale(1)}46%,100%{opacity:0}}
@@ -192,10 +192,10 @@ footer .sep{margin:0 8px}
           <div class="mini" aria-hidden="true">
             <div class="cap"><span class="wheel"></span></div>
             <div class="body">
-              <span class="m1">HEY,<br>YOU!</span>
-              <span class="m2">LIGHTER #</span>
+              <span class="m1"><b style="color:var(--yellow)">LIGHTERS</b><br><b style="color:var(--pink)">LEGACY</b></span>
+              <span class="m2">LIGHTER NO.</span>
               <span class="m3"><i class="ring r1"></i>139</span>
-              <span class="m4"><i class="ring r2"></i>CODE KTX</span>
+              <span class="m4"><i class="ring r2"></i>139-KTX</span>
             </div>
           </div>
           <div class="wtext">
@@ -601,7 +601,7 @@ function drawJourney(){
   });
   R.forEach(function(r){ if(r.country) countries[r.country]=1; if(r.status==="refilled"){ var k=r.name||t.anon; refillBy[k]=(refillBy[k]||0)+1; } });
   var refills=R.filter(function(r){return r.status==="refilled"}).length;
-  var K=[[Object.keys(by).length," / 1,000",t.kSeen],[active,"",t.kActive],[totalKm,"",t.kKm],[Object.keys(countries).length,"",t.kCountries],[refills,"",t.kRefills]];
+  var K=[[Object.keys(by).length," / "+nf(1000),t.kSeen],[active,"",t.kActive],[totalKm,"",t.kKm],[Object.keys(countries).length,"",t.kCountries],[refills,"",t.kRefills]];
   $("jk").innerHTML=K.map(function(k,i){return '<div><b id="jk'+i+'">0</b><span>'+k[2]+'</span></div>'}).join("");
   K.forEach(function(k,i){ countUp($("jk"+i),k[0],k[1]); });
   function board(id,items,fmt){
