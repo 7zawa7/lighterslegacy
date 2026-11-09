@@ -430,7 +430,7 @@ function route(){
 }
 document.addEventListener("click", function(e){
   var a = e.target.closest && e.target.closest(".backlink");
-  if (a) { e.preventDefault(); location.hash = ""; route(); }
+  if (a) { e.preventDefault(); try{ history.replaceState(null, "", location.pathname + location.search); }catch(_){ location.hash=""; } route(); }
 });
 
 /* ---- photos ---- */
@@ -524,13 +524,16 @@ function drawOtp(){
 $("idIn").addEventListener("input",function(){
   var p=parseId(this.value), v=normId(p);
   if(this.value!==v){ this.value=v; }
-  try{ this.setSelectionRange(v.length,v.length); }catch(e){}
+  caretEnd(this);
   $("otp").classList.remove("invalid"); showErr("id",false); drawOtp(); maybeVerify();
 });
 $("idIn").addEventListener("keydown",function(e){
   if(e.key==="Backspace" && /-$/.test(this.value)){ e.preventDefault(); this.value=this.value.replace(/-$/,"").slice(0,-1); VER={key:"",ok:null}; verifyBox("",""); drawOtp(); }
 });
-["focus","blur","click","keyup"].forEach(function(ev){ $("idIn").addEventListener(ev,function(){ var v=this.value; try{ this.setSelectionRange(v.length,v.length); }catch(e){} drawOtp(); }); });
+function caretEnd(el){ if(document.activeElement!==el) return; var v=el.value; try{ el.setSelectionRange(v.length,v.length); }catch(e){} }
+["focus","click","keyup"].forEach(function(ev){ $("idIn").addEventListener(ev,function(){ caretEnd(this); drawOtp(); }); });
+$("idIn").addEventListener("blur",function(){ drawOtp(); });
+function goId(){ try{ $("otp").scrollIntoView({behavior:"smooth",block:"center"}); $("idIn").focus({preventScroll:true}); }catch(e){} }
 function getId(){ var p=parseId($("idIn").value); return {n:+p.digits, code:p.letters}; }
 var spinning=false, VER={key:"",ok:null};
 function verifyBox(cls,txt){ var v=$("verify"); v.className="verify "+cls; v.textContent=txt; v.hidden=!txt; }
@@ -692,7 +695,9 @@ function validate(){
   chk(!$("story").value.trim(),"story",$("story"));
   chk(!$("consent").checked,"consent",$("consent"));
   chk(!$("age").checked,"age",$("age"));
-  if(first && first.focus) first.focus();
+  if(first){ var tgt=first; if(tgt.id==="photo") tgt=$("addph"); if(tgt.id==="idIn") tgt=$("otp");
+    try{ tgt.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
+    if(first.focus && first.type!=="file"){ try{ first.focus({preventScroll:true}); }catch(e){} } }
   return !bad;
 }
 function done(n,status,demo){
@@ -706,13 +711,13 @@ $("form").addEventListener("submit", async function(ev){
   ev.preventDefault(); var t=T[lang]; $("err-send").classList.remove("show");
   if(!validate()) return;
   var idv=getId(), n=idv.n, code=idv.code;
-  if(VER.key===n+"-"+code && VER.ok===false){ $("err-id").textContent=t.errCodeWrong; showErr("id",true); $("idIn").focus(); return; }
+  if(VER.key===n+"-"+code && VER.ok===false){ $("err-id").textContent=t.errCodeWrong; showErr("id",true); goId(); return; }
   var status=(document.querySelector("input[name=status]:checked")||{}).value||"moving";
   if(!LIVE){ done(n,status,true); return; }
   var btn=$("send"); btn.disabled=true; btn.textContent=t.sending;
   try{
     var ok=await sb("/rest/v1/rpc/check_code",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({n:n,c:code})}).then(function(r){return r.json()});
-    if(ok!==true){ $("err-id").textContent=t.errCodeWrong; showErr("id",true); $("idIn").focus(); throw "code"; }
+    if(ok!==true){ $("err-id").textContent=t.errCodeWrong; showErr("id",true); goId(); throw "code"; }
     var paths=[];
     for(var i=0;i<photos.length;i++){
       var blob=await shrink(photos[i].file);
