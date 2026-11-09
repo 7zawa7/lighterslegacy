@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lighters Legacy – Report your lighter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#E8FF00;--pink:#FF2E93;--ink:#0A0A0A;--paper:#FFFFFF;--muted:#2A2A2A;--err:#C4006A;
+  --head:'Archivo Black',sans-serif;--body:'Space Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--yellow);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--ink);text-decoration-thickness:2px;text-underline-offset:3px}
+a:hover{color:var(--err)}
+.wrap{max-width:640px;margin:0 auto;padding:18px 18px 56px}
+.lang{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.lang button{font-family:var(--body);font-weight:700;font-size:15px;background:transparent;border:2.5px solid var(--ink);border-radius:999px;padding:6px 12px;min-height:44px;min-width:48px;cursor:pointer;color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--pink)}
+:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.banner{margin:16px 0 22px;background:var(--ink);border-radius:20px;padding:26px 24px 30px;display:flex;flex-direction:column;align-items:flex-start;font-family:var(--head);text-transform:uppercase;line-height:.84}
+.banner .l1,.banner .l2{font-size:clamp(40px,13vw,68px);letter-spacing:-1px}
+.banner .l1{color:var(--yellow)}.banner .l2{color:var(--pink)}
+.tagx{margin-top:12px;transform:rotate(-4deg);background:var(--yellow);color:var(--ink);font-family:var(--body);font-weight:700;font-size:16px;line-height:1;padding:5px 10px;border-radius:3px;letter-spacing:1px}
+h1{font-family:var(--head);font-weight:400;font-size:clamp(26px,6.5vw,38px);line-height:1.05;text-transform:uppercase;margin:6px 0 10px;text-wrap:balance}
+.intro{margin:0 0 22px;text-wrap:pretty}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 26px;padding:0;list-style:none}
+.steps li{background:var(--paper);border:3px solid var(--ink);border-radius:14px;padding:12px 8px;text-align:center;font-weight:700;font-size:14px;line-height:1.25}
+.steps b{display:block;font-family:var(--head);font-weight:400;font-size:30px;color:var(--err);line-height:1}
+.card{background:var(--paper);border:3px solid var(--ink);border-radius:20px;padding:22px 18px;box-shadow:6px 7px 0 var(--ink)}
+.field{margin:0 0 22px}
+.lbl{display:block;font-weight:700;font-size:16px;margin:0 0 6px;padding:0}
+.hint{display:block;font-size:14px;color:var(--muted);margin:-2px 0 8px}
+.req{color:var(--err)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+input[type=text],input[type=number],textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:11px 12px;min-height:48px}
+textarea{min-height:120px;resize:vertical}
+input.big{font-family:var(--head);font-size:26px;letter-spacing:1px}
+input.code{text-transform:uppercase;letter-spacing:4px}
+.invalid{border-color:var(--err)!important;background:#FFF0F7!important}
+.err{display:none;color:var(--err);font-weight:700;font-size:14px;margin-top:6px}
+.err.show{display:block}
+.count{font-size:13px;color:var(--muted);text-align:right;margin-top:4px}
+fieldset{border:0;margin:0 0 22px;padding:0;min-width:0}
+.status{display:grid;gap:10px}
+.status label{display:flex;gap:12px;align-items:flex-start;border:2.5px solid var(--ink);border-radius:12px;padding:12px;cursor:pointer;min-height:48px}
+.status input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--ink);flex:0 0 auto}
+.status label:has(input:checked){background:var(--pink)}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px}
+.ph{position:relative;aspect-ratio:1;border:2.5px solid var(--ink);border-radius:12px;overflow:hidden;background:#FAFAF7}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph button{position:absolute;top:4px;right:4px;width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);background:var(--yellow);font:700 18px/1 var(--body);cursor:pointer;color:var(--ink)}
+.addph{position:relative;aspect-ratio:1;border:2.5px dashed var(--ink);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;font-weight:700;font-size:13px;line-height:1.2;padding:6px;cursor:pointer;background:#FAFAF7}
+.addph span.plus{font-family:var(--head);font-size:34px;line-height:1}
+.addph input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.place-box gmp-place-autocomplete{width:100%;border:2.5px solid var(--ink);border-radius:10px;background:#fff}
+.picked{font-size:14px;margin-top:8px;font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);font-weight:700;font-size:16px;border:2.5px solid var(--ink);border-radius:999px;padding:10px 18px;min-height:48px;background:#fff;color:var(--ink);cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--yellow)}
+.btn.primary{width:100%;font-family:var(--head);font-weight:400;font-size:26px;padding:16px 20px;background:var(--pink);box-shadow:5px 6px 0 var(--ink);text-transform:uppercase;border-width:3px}
+.btn.primary:hover{background:#FF5AAA}
+.btn[disabled]{opacity:.6;cursor:wait}
+.check{display:flex;gap:12px;align-items:flex-start;font-size:15px;cursor:pointer;margin-bottom:10px}
+.check input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--ink);flex:0 0 auto}
+.done{text-align:center;padding:30px 18px}
+.done h2{font-family:var(--head);font-weight:400;font-size:clamp(26px,7vw,36px);line-height:1.1;text-transform:uppercase;margin:0 0 12px;text-wrap:balance}
+.done p{margin:0 0 20px}
+.demo{display:inline-block;background:var(--yellow);border:2px dashed var(--ink);border-radius:10px;padding:8px 12px;font-size:14px;margin:0 0 20px}
+.ig{font-weight:700;font-size:20px}
+.legal{background:var(--paper);border:3px solid var(--ink);border-radius:20px;padding:24px 20px;box-shadow:6px 7px 0 var(--ink)}
+.legal h2{font-family:var(--head);font-weight:400;font-size:28px;text-transform:uppercase;margin:0 0 14px}
+.legal h3{font-size:16px;margin:22px 0 6px}
+.legal p,.legal li{font-size:14.5px;line-height:1.6;margin:0 0 10px}
+.legal ul{padding-left:20px;margin:0 0 10px}
+footer{margin-top:34px;text-align:center;font-size:14px}
+footer .sep{margin:0 8px}
+
+
+/* code input like a security code */
+.otp{position:relative;margin-top:4px}
+.otp-boxes{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.otp-boxes .bx{width:44px;height:58px;border:3px solid var(--ink);border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:28px;line-height:1;transition:transform .15s,background .15s,border-color .15s}
+.otp-boxes .bx.filled{background:var(--yellow)}
+.otp-boxes .bx.code.filled{background:var(--pink)}
+.otp-boxes .bx.ghost{border-style:dashed;opacity:.55}
+.otp-boxes .bx.act{border-color:var(--pink);transform:translateY(-3px);box-shadow:0 4px 0 var(--ink)}
+.otp-boxes .bx.act::after{content:"";width:3px;height:30px;background:var(--ink);animation:blink 1s steps(1) infinite}
+.otp-boxes .dash{font-family:var(--head);font-size:30px;width:18px;text-align:center}
+.otp-boxes .dash.on{color:var(--pink)}
+@keyframes blink{50%{opacity:0}}
+.otp-in{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;cursor:text;border:0}
+.otp.invalid .bx{border-color:var(--err)}
+.where{display:flex;gap:18px;align-items:center;margin-top:14px;background:#F6F6F6;border:2px solid var(--ink);border-radius:14px;padding:12px 14px}
+.mini{flex:0 0 auto;width:84px}
+.mini .cap{height:22px;margin:0 8px;background:linear-gradient(90deg,#9A9A9A,#E6E6E6 45%,#8A8A8A);border:2px solid var(--ink);border-bottom:0;border-radius:6px 6px 0 0;position:relative}
+.mini .wheel{position:absolute;right:6px;top:-9px;width:16px;height:16px;border-radius:50%;background:repeating-linear-gradient(90deg,#555 0 2px,#999 2px 4px);border:2px solid var(--ink)}
+.mini .body{height:136px;background:var(--pink);border:2px solid var(--ink);border-radius:8px 8px 18px 18px;padding:8px 7px;display:flex;flex-direction:column;justify-content:space-between;font-family:var(--head);color:var(--ink);line-height:.95}
+.mini .m1{font-size:10px}.mini .m2{font-family:var(--body);font-weight:700;font-size:8px}
+.mini .m3{font-size:30px;position:relative;letter-spacing:-1px}
+.mini .m4{font-family:var(--body);font-weight:700;font-size:9px;position:relative}
+.ring{position:absolute;inset:-4px -5px;border:3px solid var(--yellow);border-radius:8px;box-shadow:0 0 0 2px var(--ink);opacity:0}
+.r1{animation:ringA 4.4s infinite}.r2{animation:ringB 4.4s infinite}
+@keyframes ringA{0%,4%{opacity:0;transform:scale(1.25)}10%,40%{opacity:1;transform:scale(1)}46%,100%{opacity:0}}
+@keyframes ringB{0%,46%{opacity:0;transform:scale(1.25)}52%,82%{opacity:1;transform:scale(1)}88%,100%{opacity:0}}
+.wtext{display:flex;flex-direction:column;gap:4px;font-size:14px;min-width:0}
+.wtext b{font-size:15px}
+.wl{font-weight:700;opacity:.25;transition:opacity .2s}
+.w1{animation:lA 4.4s infinite}.w2{animation:lB 4.4s infinite}.w3{font-family:var(--head);font-size:22px;animation:lC 4.4s infinite}
+@keyframes lA{0%,6%{opacity:.25}10%,40%{opacity:1}46%,100%{opacity:.25}}
+@keyframes lB{0%,48%{opacity:.25}52%,82%{opacity:1}88%,100%{opacity:.25}}
+@keyframes lC{0%,84%{opacity:.25}88%,98%{opacity:1}100%{opacity:.25}}
+@media (max-width:380px){.otp-boxes .bx{width:38px;height:52px;font-size:24px}}
+@media (prefers-reduced-motion:reduce){.ring,.wl{animation:none}.ring{opacity:1}.wl{opacity:1}.otp-boxes .bx.act::after{animation:none}}
+
+.otp-boxes .bx > span{display:block}
+.otp-boxes .bx.spin{background:#fff;border-color:var(--ink)}
+.otp-boxes .bx.spin > span{animation:reel .12s linear infinite;filter:blur(.6px)}
+@keyframes reel{0%{transform:translateY(-60%);opacity:.3}50%{opacity:1}100%{transform:translateY(60%);opacity:.3}}
+.otp.real .bx{animation:pop .5s ease}
+@keyframes pop{40%{transform:scale(1.12)}}
+.otp.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.verify{margin-top:12px;border:3px solid var(--ink);border-radius:12px;padding:10px 12px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px}
+.verify.wait{background:#fff}
+.verify.wait::before{content:"";width:16px;height:16px;border:3px solid var(--ink);border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex:0 0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.verify.ok{background:var(--ink);color:var(--yellow)}
+.verify.ok::before{content:"✓";display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--yellow);color:var(--ink);font-size:18px;flex:0 0 auto}
+.verify.bad{background:#FFF0F7;color:var(--err);border-color:var(--err)}
+@media (prefers-reduced-motion:reduce){.otp-boxes .bx.spin > span,.otp.real .bx,.otp.shake{animation:none}}
+/* journey */
+.pending{font-size:14px;background:#F4F4F4;border:2px solid var(--ink);border-radius:10px;padding:8px 12px;margin:0 0 18px}
+#journey{margin-top:30px}
+#journey h2.big{font-family:var(--head);font-weight:400;text-transform:uppercase;font-size:clamp(28px,8vw,44px);line-height:1;margin:0 0 6px}
+.jdemo{font-size:13px;font-weight:700;margin:0 0 14px}
+.jk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 26px}
+.jk div{background:var(--ink);color:#fff;border-radius:16px;padding:14px}
+.jk div:first-child{grid-column:1/-1;background:var(--pink);color:var(--ink)}
+.jk b{display:block;font-family:var(--head);font-weight:400;font-size:clamp(30px,9vw,44px);line-height:1;font-variant-numeric:tabular-nums}
+.jk span{font-size:13px;font-weight:700}
+.hall{background:var(--ink);color:#fff;border-radius:22px;padding:22px 18px;margin-bottom:24px;overflow:hidden;position:relative}
+.hall h2{font-family:var(--head);font-weight:400;text-transform:uppercase;font-size:clamp(30px,9vw,46px);line-height:.95;margin:0 0 4px;color:var(--yellow);display:flex;align-items:center;gap:10px}
+.flame{width:34px;height:46px;flex:0 0 auto;transform-origin:50% 90%;animation:flick 1.3s ease-in-out infinite alternate}
+@keyframes flick{0%{transform:scale(1,1) rotate(-2deg)}50%{transform:scale(.94,1.06) rotate(2deg)}100%{transform:scale(1.03,.96) rotate(-1deg)}}
+.board{margin-top:22px}
+.board h3{font-family:var(--body);font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--pink);margin:0 0 10px}
+.entry{position:relative;margin:0 0 8px;border-radius:12px;overflow:hidden;background:#1A1A1A;opacity:0;transform:translateX(-24px);transition:opacity .5s ease,transform .5s ease}
+.entry .bar{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,rgba(255,46,147,.55),rgba(255,46,147,.15));transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.entry .in{position:relative;display:flex;align-items:center;gap:10px;padding:10px 12px}
+.entry .rk{font-family:var(--head);font-size:22px;width:30px;color:var(--yellow);flex:0 0 auto}
+.entry .tx{flex:1 1 auto;min-width:0;font-size:14px;line-height:1.3}
+.entry .tx b{display:block;font-size:15px;color:#fff}
+.entry .vl{font-family:var(--head);font-size:18px;white-space:nowrap;color:#fff}
+.entry.first{background:#262600}.entry.first .bar{background:linear-gradient(90deg,rgba(232,255,0,.6),rgba(232,255,0,.15))}
+.entry.first .rk{color:#fff}
+.board.go .entry{opacity:1;transform:none}
+#jmap{height:340px;border-radius:16px;border:3px solid var(--ink);margin-bottom:10px}
+.jmap-wrap h3{font-family:var(--head);font-weight:400;text-transform:uppercase;font-size:22px;margin:0 0 10px}
+@media (prefers-reduced-motion:reduce){.flame{animation:none}.entry,.entry .bar{transition:none}}
+[hidden]{display:none!important}
+@media (max-width:420px){.row{grid-template-columns:1fr}.steps li{font-size:13px;padding:10px 4px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="lang" role="group" aria-label="Language" id="lang"></div>
+  <div class="banner" role="img" aria-label="Lighters Legacy – 1 of 1,000">
+    <span class="l1">Lighters</span><span class="l2">Legacy</span><span class="tagx">1 of 1,000</span>
+  </div>
+
+  <main id="formView">
+    <h1 data-i="title"></h1>
+    <p class="intro" data-i="intro"></p>
+    <ol class="steps">
+      <li><b>1</b><span data-i="step1"></span></li>
+      <li><b>2</b><span data-i="step2"></span></li>
+      <li><b>3</b><span data-i="step3"></span></li>
+    </ol>
+    <form class="card" id="form" novalidate>
+      <div class="field">
+        <label class="lbl" for="idIn"><span data-i="idLabel"></span> <span class="req">*</span></label>
+        <span class="hint" data-i="idHint"></span>
+        <div class="otp" id="otp">
+          <div class="otp-boxes" id="otpBoxes" aria-hidden="true"></div>
+          <input id="idIn" class="otp-in" type="text" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="8" aria-describedby="err-id">
+        </div>
+        <div class="verify" id="verify" role="status" aria-live="polite" hidden></div>
+        <div class="err" id="err-id" data-i="errId"></div>
+        <div class="where">
+          <div class="mini" aria-hidden="true">
+            <div class="cap"><span class="wheel"></span></div>
+            <div class="body">
+              <span class="m1">HEY,<br>YOU!</span>
+              <span class="m2">LIGHTER #</span>
+              <span class="m3"><i class="ring r1"></i>139</span>
+              <span class="m4"><i class="ring r2"></i>CODE KTX</span>
+            </div>
+          </div>
+          <div class="wtext">
+            <b data-i="where"></b>
+            <span class="wl w1">139 = <span data-i="aNum"></span></span>
+            <span class="wl w2">KTX = <span data-i="aCode"></span></span>
+            <span class="wl w3">139-KTX</span>
+          </div>
+        </div>
+      </div>
+
+      <fieldset>
+        <legend class="lbl"><span data-i="statusQ"></span> <span class="req">*</span></legend>
+        <div class="status">
+          <label><input type="radio" name="status" value="moving" checked><span data-i="stMoving"></span></label>
+          <label><input type="radio" name="status" value="found"><span data-i="stFound"></span></label>
+          <label><input type="radio" name="status" value="refilled"><span data-i="stRefill"></span></label>
+          <label><input type="radio" name="status" value="empty"><span data-i="stEmpty"></span></label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <span class="lbl" id="photo-lbl"><span data-i="photo"></span> <span class="req">*</span></span>
+        <span class="hint" data-i="photoHint"></span>
+        <div class="photos" id="photos">
+          <label class="addph" id="addph"><span class="plus" aria-hidden="true">+</span><span data-i="photoBtn"></span>
+            <input type="file" id="photo" accept="image/*" multiple aria-labelledby="photo-lbl"></label>
+        </div>
+        <div class="err" id="err-photo" data-i="errPhoto"></div>
+      </div>
+
+      <div class="field place-box">
+        <span class="lbl" id="place-lbl"><span data-i="place"></span> <span class="req">*</span></span>
+        <span class="hint" data-i="placeHint"></span>
+        <div id="gplace" hidden></div>
+        <div class="picked" id="picked" aria-live="polite"></div>
+        <div class="row" id="manualPlace" style="margin-top:4px">
+          <div>
+            <label class="lbl" for="city" data-i="city"></label>
+            <input type="text" id="city" autocomplete="off" list="cityList">
+            <datalist id="cityList"></datalist>
+          </div>
+          <div>
+            <label class="lbl" for="country" data-i="country"></label>
+            <input type="text" id="country" list="countries" autocomplete="country-name">
+            <datalist id="countries"></datalist>
+          </div>
+        </div>
+        <div class="err" id="err-place" data-i="errReq"></div>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="story"><span data-i="story"></span> <span class="req">*</span></label>
+        <span class="hint" data-i="storyHint"></span>
+        <textarea id="story" maxlength="500" required></textarea>
+        <div class="count"><span id="count">0</span>/500</div>
+        <div class="err" id="err-story" data-i="errReq"></div>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="name" data-i="name"></label>
+        <span class="hint" data-i="nameHint"></span>
+        <input type="text" id="name" autocomplete="nickname" placeholder="@">
+      </div>
+
+      <div class="field">
+        <label class="check"><input type="checkbox" id="consent"><span data-i="consent"></span></label>
+        <div class="err" id="err-consent" data-i="errConsent"></div>
+        <label class="check"><input type="checkbox" id="age"><span data-i="age"></span></label>
+        <div class="err" id="err-age" data-i="errAge"></div>
+      </div>
+
+      <div class="field">
+        <button type="submit" class="btn primary" id="send" data-i="send"></button>
+        <div class="err" id="err-send" role="alert"></div>
+      </div>
+    </form>
+  </main>
+
+  <section class="card done" id="doneView" hidden aria-live="polite">
+    <h2 id="doneTitle"></h2>
+    <p id="doneText"></p>
+    <div class="demo" id="demoNote" data-i="demo" hidden></div>
+    <p class="pending" data-i="pending"></p>
+    <p><a class="ig" href="https://instagram.com/lighterslegacy">@lighterslegacy</a></p>
+    <button type="button" class="btn" id="again" data-i="again"></button>
+  </section>
+
+  <section id="journey" hidden aria-labelledby="jTitle">
+    <h2 class="big" id="jTitle" data-i="jTitle"></h2>
+    <p class="jdemo" id="jdemo" data-i="demoData" hidden></p>
+    <div class="jk" id="jk"></div>
+    <div class="hall">
+      <h2><svg class="flame" viewBox="0 0 100 140" aria-hidden="true"><path d="M50 0 C62 30 92 50 92 92 A42 42 0 0 1 8 92 C8 66 24 52 34 40 C36 57 43 65 52 69 C43 46 45 24 50 0 Z" fill="#FF2E93"/><path d="M50 70 C58 84 70 92 70 108 A20 20 0 0 1 30 108 C30 96 40 90 44 82 C46 90 50 94 54 95 C50 86 49 78 50 70 Z" fill="#E8FF00"/></svg><span data-i="hall"></span></h2>
+      <div class="board" id="bTrip"><h3 data-i="hTrip"></h3><div class="ents"></div></div>
+      <div class="board" id="bFar"><h3 data-i="hFar"></h3><div class="ents"></div></div>
+      <div class="board" id="bRefill"><h3 data-i="hRefill"></h3><div class="ents"></div></div>
+      <div class="board" id="bLong"><h3 data-i="hLong"></h3><div class="ents"></div></div>
+      <p id="jempty" data-i="empty" hidden></p>
+    </div>
+    <div class="jmap-wrap" id="jmapWrap" hidden><h3 data-i="mapTitle"></h3><div id="jmap" role="img" aria-label="Map"></div></div>
+  </section>
+
+  <section class="legal" id="impressum" hidden lang="de">
+    <h2>Impressum</h2>
+    <p class="note" data-i="legalNote"></p>
+    <h3>Angaben gemäß § 5 DDG</h3>
+    <p>Enzo Zawarty<br>enzolutions<br>c/o IP-Management #7820<br>Ludwig-Erhard-Straße 18<br>20459 Hamburg<br>Deutschland</p>
+    <h3>Kontakt</h3>
+    <p>Telefon: 01556 5807686<br>E-Mail: hello@enzolutions.de</p>
+    <h3>Umsatzsteuer</h3>
+    <p>Kleinunternehmer gemäß § 19 UStG. Es wird keine Umsatzsteuer ausgewiesen.</p>
+    <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+    <p>Enzo Zawarty, Anschrift wie oben.</p>
+    <h3>Verbraucherstreitbeilegung</h3>
+    <p>Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+    <p><a href="#" class="backlink" data-i="back"></a></p>
+  </section>
+
+  <section class="legal" id="datenschutz" hidden lang="de">
+    <h2>Datenschutz</h2>
+    <p class="note" data-i="legalNote"></p>
+    <h3>1. Verantwortlicher</h3>
+    <p>Enzo Zawarty, enzolutions, c/o IP-Management #7820, Ludwig-Erhard-Straße 18, 20459 Hamburg, E-Mail: hello@enzolutions.de</p>
+    <h3>2. Worum es geht</h3>
+    <p>Lighters Legacy ist ein Kunstprojekt: 1.000 nummerierte Feuerzeuge werden weitergegeben, und ihre Reise wird auf dieser Seite und auf Instagram (@lighterslegacy) gezeigt. Über das Formular kannst du melden, wo ein Feuerzeug gerade ist.</p>
+    <h3>3. Welche Daten wir verarbeiten</h3>
+    <ul>
+      <li>Feuerzeug-Nummer, Code und Status</li>
+      <li>deine Fotos</li>
+      <li>Stadt und Land sowie die ungefähren Koordinaten der Stadt (kein genauer Standort)</li>
+      <li>deine Geschichte, freiwillig dein Name oder Instagram-Name</li>
+      <li>Sprache und Zeitpunkt der Meldung</li>
+      <li>beim Aufruf der Seite technisch nötige Daten (IP-Adresse, Browser, Zeitpunkt) in den Server-Logs des Hosters</li>
+    </ul>
+    <h3>4. Zweck und Rechtsgrundlage</h3>
+    <p>Wir nutzen deine Meldung, um die Reise der Feuerzeuge zu dokumentieren, auf einer Karte darzustellen und mit deiner Einwilligung auf Instagram und dieser Seite zu veröffentlichen (Art. 6 Abs. 1 lit. a DSGVO). Die Server-Logs dienen dem sicheren Betrieb der Seite (Art. 6 Abs. 1 lit. f DSGVO). Gezeigt wird immer nur die Stadt, nie ein genauer Ort.</p>
+    <h3>5. Empfänger und Dienste</h3>
+    <ul>
+      <li><b>Supabase</b> (Supabase Inc.) speichert Meldungen und Fotos auf Servern in der EU (Frankfurt).</li>
+      <li><b>Google Maps Platform / Places</b> (Google Ireland Ltd.): Wenn du deine Stadt suchst, werden deine Eingabe und deine IP-Adresse an Google übertragen. Eine Übermittlung in die USA ist möglich; Google ist nach dem EU-US Data Privacy Framework zertifiziert.</li>
+      <li><b>Instagram</b> (Meta Platforms Ireland Ltd.): Dort veröffentlichen wir ausgewählte Meldungen, wenn du eingewilligt hast.</li>
+      <li><b>Hosting</b> dieser Seite über enzolutions.</li>
+      <li><b>Spracherkennung</b> (country.is, ersatzweise GeoJS): Beim Öffnen der Seite wird deine IP-Adresse kurz an diesen Dienst geschickt, um das Land zu erkennen und die Seite in deiner Sprache anzuzeigen. Wir speichern weder IP-Adresse noch Land.</li>
+      <li><b>Open-Meteo</b> (Schweiz): Wenn du deine Stadt eintippst, wird der Suchbegriff an Open-Meteo geschickt, um passende Orte und deren Koordinaten zu finden.</li>
+      <li><b>Google Fonts</b> (Google Ireland Ltd.): Die Schriften dieser Seite werden von Google-Servern geladen; dabei wird deine IP-Adresse an Google übertragen.</li>
+    </ul>
+    <h3>6. Speicherdauer</h3>
+    <p>Wir speichern Meldungen bis zum Ende des Projekts oder bis du deine Einwilligung widerrufst. Danach werden sie gelöscht. Bereits veröffentlichte Beiträge entfernen wir auf Wunsch.</p>
+    <h3>7. Deine Rechte</h3>
+    <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Deine Einwilligung kannst du jederzeit per E-Mail an hello@enzolutions.de widerrufen. Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren.</p>
+    <h3>8. Mindestalter</h3>
+    <p>Mitmachen und Fotos einsenden ist ab 16 Jahren möglich.</p>
+    <p><a href="#" class="backlink" data-i="back"></a></p>
+  </section>
+
+  <footer>
+    Lighters Legacy<span class="sep">·</span><a href="#impressum" data-i="imprint"></a><span class="sep">·</span><a href="#datenschutz" data-i="privacy"></a>
+  </footer>
+</div>
+
+<script>
+/* ===== SETTINGS (fill in when the site goes live) ===== */
+var CONFIG = {
+  supabaseUrl: "https://qtiokymxbavggrlfmupo.supabase.co",
+  supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0aW9reW14YmF2Z2dybGZtdXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyMjU3MzcsImV4cCI6MjEwOTgwMTczN30.mSIMvD8LEdtXwR30sPWUspL9KZcOC3BczthYabh3xtU",
+  googleMapsKey: ""     // optional: Maps JavaScript API key with Places API (New)
+};
+var LIVE = !!(CONFIG.supabaseUrl && CONFIG.supabaseAnonKey);
+var MAXN = 1001;   // 1001 = test lighter, set back to 1000 at launch
+function sb(path,opts){
+  opts=opts||{}; opts.headers=Object.assign({apikey:CONFIG.supabaseAnonKey,Authorization:"Bearer "+CONFIG.supabaseAnonKey},opts.headers||{});
+  return fetch(CONFIG.supabaseUrl.replace(/\/$/,"")+path,opts);
+}
+
+var T = {"en": {"title": "You found a lighter. Tell its story.", "intro": "You're holding one of 1,000 numbered lighters travelling the world, hand to hand. Tell us where it is now and how it got to you. Then keep it for a few days and pass it on to someone new.", "step1": "Snap photos", "step2": "Tell its story", "step3": "Pass it on", "num": "Lighter number", "code": "Code", "codeHint": "The number and the 3-character code are on the pink front of the sticker.", "statusQ": "What's going on with it?", "stMoving": "I got it from someone and I'll pass it on", "stFound": "I found it lying around", "stRefill": "I refilled it, it lives on!", "stEmpty": "It's out of gas, its journey is over", "photo": "Photos of the lighter", "photoHint": "Up to 5. With you, your hand or the place you're at.", "photoBtn": "Add photos", "photoMax": "Max. 5 photos.", "remove": "Remove photo", "place": "Where are you?", "placeHint": "Start typing your city and pick it from the list.", "city": "City", "country": "Country", "story": "How did you get it?", "storyHint": "Who gave it to you, where, how? A few sentences are perfect.", "name": "Your name or Instagram", "nameHint": "Optional. We'll tag you when we post it.", "consent": "My photos and story may be posted on @lighterslegacy. Only my city is shown, never an exact spot.", "age": "I'm 16 or older.", "send": "Send it", "sending": "Sending…", "errNum": "Enter a number from 1 to 1,000.", "errCode": "Enter the 3-character code.", "errCodeWrong": "Number and code don't match. Check the sticker.", "errPhoto": "Please add at least one photo.", "errReq": "Please fill this in.", "errConsent": "Please tick this box so we can post it.", "errAge": "You need to be 16 or older to take part.", "errSend": "That didn't work. Check your connection and try again.", "doneTitle": "Thanks! Lighter #{n} is on the map.", "doneText": "Keep it for a few days, then pass it on to someone new. Follow its journey here:", "doneEndTitle": "Rest in peace, lighter #{n}.", "doneEndText": "Thanks for giving it its last flame. Its whole journey will be posted here:", "doneRefillTitle": "Refill hero! Lighter #{n} lives on.", "doneRefillText": "You just extended its life. We'll give you a shoutout on @lighterslegacy and put you in the Hall of Flame.", "demo": "Preview: this form isn't connected yet. Nothing was sent.", "again": "Report another lighter", "imprint": "Imprint", "privacy": "Privacy", "back": "Back", "legalNote": "The legal texts are in German, as required by German law.", "pending": "We'll quickly check your report, then it goes on the map.", "jTitle": "The journey so far", "kSeen": "lighters spotted", "kActive": "still burning", "kKm": "km travelled", "kCountries": "countries", "kRefills": "refills", "hall": "Hall of Flame", "hTrip": "Longest trips", "hTripLine": "took #{n} from {a} to {b}", "hFar": "Furthest travellers", "hRefill": "Refill heroes", "hRefillLine": "{c}× refilled", "hLong": "Longest burning", "days": "days", "mapTitle": "Where they are now", "empty": "No released reports yet. Yours could be the first!", "demoData": "Demo data: shows how it will look.", "anon": "Someone", "idLabel": "Lighter number & code", "idHint": "Type what's on the pink front of the sticker, e.g. 139-KTX.", "where": "Where do I find it?", "aNum": "number", "aCode": "code", "errId": "Enter the number (1–1,000) and the 3-letter code, e.g. 139-KTX.", "checking": "Checking your lighter…", "real": "Real lighter! #{n} is one of the 1,000.", "fake": "We can't find this lighter. Check number and code on the sticker.", "vdemo": "Preview: not checked against the database yet."}, "de": {"title": "Du hast ein Feuerzeug gefunden. Erzähl seine Geschichte.", "intro": "Du hältst eins von 1.000 nummerierten Feuerzeugen in der Hand, die von Hand zu Hand um die Welt reisen. Sag uns, wo es jetzt ist und wie es zu dir kam. Behalte es dann ein paar Tage und gib es an jemand Neues weiter.", "step1": "Fotos machen", "step2": "Geschichte erzählen", "step3": "Weitergeben", "num": "Feuerzeug-Nummer", "code": "Code", "codeHint": "Nummer und 3-stelliger Code stehen vorne auf dem pinken Teil des Aufklebers.", "statusQ": "Was ist los mit ihm?", "stMoving": "Ich hab es von jemandem bekommen und gebe es weiter", "stFound": "Ich hab es irgendwo gefunden", "stRefill": "Ich hab es nachgefüllt, es lebt weiter!", "stEmpty": "Es ist leer, seine Reise ist vorbei", "photo": "Fotos vom Feuerzeug", "photoHint": "Bis zu 5. Mit dir, deiner Hand oder dem Ort, an dem du bist.", "photoBtn": "Fotos hinzufügen", "photoMax": "Maximal 5 Fotos.", "remove": "Foto entfernen", "place": "Wo bist du?", "placeHint": "Fang an, deine Stadt zu tippen, und wähl sie aus der Liste.", "city": "Stadt", "country": "Land", "story": "Wie hast du es bekommen?", "storyHint": "Wer hat es dir gegeben, wo, wie? Ein paar Sätze reichen.", "name": "Dein Name oder Instagram", "nameHint": "Freiwillig. Wir markieren dich, wenn wir es posten.", "consent": "Meine Fotos und meine Geschichte dürfen auf @lighterslegacy gepostet werden. Gezeigt wird nur meine Stadt, nie ein genauer Ort.", "age": "Ich bin mindestens 16 Jahre alt.", "send": "Abschicken", "sending": "Wird gesendet…", "errNum": "Gib eine Nummer von 1 bis 1.000 ein.", "errCode": "Gib den 3-stelligen Code ein.", "errCodeWrong": "Nummer und Code passen nicht zusammen. Schau nochmal auf den Aufkleber.", "errPhoto": "Bitte füg mindestens ein Foto hinzu.", "errReq": "Bitte ausfüllen.", "errConsent": "Bitte setz den Haken, damit wir es posten dürfen.", "errAge": "Du musst mindestens 16 sein, um mitzumachen.", "errSend": "Hat nicht geklappt. Prüf deine Verbindung und versuch es nochmal.", "doneTitle": "Danke! Feuerzeug #{n} ist auf der Karte.", "doneText": "Behalte es ein paar Tage und gib es dann an jemand Neues weiter. Verfolge seine Reise hier:", "doneEndTitle": "Ruhe in Frieden, Feuerzeug #{n}.", "doneEndText": "Danke, dass du ihm seine letzte Flamme gegeben hast. Seine ganze Reise wird hier gepostet:", "doneRefillTitle": "Refill-Held! Feuerzeug #{n} lebt weiter.", "doneRefillText": "Du hast sein Leben verlängert. Dafür gibt es einen Shoutout auf @lighterslegacy und einen Platz in der Hall of Flame.", "demo": "Vorschau: Das Formular ist noch nicht verbunden. Es wurde nichts gesendet.", "again": "Weiteres Feuerzeug melden", "imprint": "Impressum", "privacy": "Datenschutz", "back": "Zurück", "legalNote": "", "pending": "Wir prüfen deine Meldung kurz, dann kommt sie auf die Karte.", "jTitle": "Die Reise bisher", "kSeen": "Feuerzeuge aufgetaucht", "kActive": "brennen noch", "kKm": "km gereist", "kCountries": "Länder", "kRefills": "Refills", "hall": "Hall of Flame", "hTrip": "Längste Trips", "hTripLine": "hat #{n} von {a} nach {b} gebracht", "hFar": "Weiteste Reisende", "hRefill": "Refill-Helden", "hRefillLine": "{c}× nachgefüllt", "hLong": "Brennen am längsten", "days": "Tage", "mapTitle": "Wo sie gerade sind", "empty": "Noch keine freigegebenen Meldungen. Deine könnte die erste sein!", "demoData": "Demo-Daten: So wird es aussehen.", "anon": "Jemand", "idLabel": "Feuerzeug-Nummer & Code", "idHint": "Tipp ab, was vorne auf dem pinken Aufkleber steht, z. B. 139-KTX.", "where": "Wo finde ich das?", "aNum": "Nummer", "aCode": "Code", "errId": "Gib die Nummer (1–1.000) und den 3-Buchstaben-Code ein, z. B. 139-KTX.", "checking": "Wir prüfen dein Feuerzeug…", "real": "Echtes Feuerzeug! #{n} ist eins der 1.000.", "fake": "Dieses Feuerzeug finden wir nicht. Prüf Nummer und Code auf dem Aufkleber.", "vdemo": "Vorschau: noch nicht mit der Datenbank geprüft."}, "es": {"title": "Encontraste un mechero. Cuenta su historia.", "intro": "Tienes en la mano uno de los 1.000 mecheros numerados que viajan por el mundo de mano en mano. Cuéntanos dónde está ahora y cómo llegó a ti. Luego quédatelo unos días y pásaselo a alguien nuevo.", "step1": "Haz fotos", "step2": "Cuenta su historia", "step3": "Pásalo", "num": "Número del mechero", "code": "Código", "codeHint": "El número y el código de 3 caracteres están en la parte rosa de la pegatina.", "statusQ": "¿Qué pasa con él?", "stMoving": "Me lo dio alguien y lo voy a pasar", "stFound": "Me lo encontré por ahí", "stRefill": "Lo recargué, ¡sigue vivo!", "stEmpty": "Se quedó sin gas, su viaje terminó", "photo": "Fotos del mechero", "photoHint": "Hasta 5. Contigo, tu mano o el lugar donde estás.", "photoBtn": "Añadir fotos", "photoMax": "Máximo 5 fotos.", "remove": "Quitar foto", "place": "¿Dónde estás?", "placeHint": "Empieza a escribir tu ciudad y elígela de la lista.", "city": "Ciudad", "country": "País", "story": "¿Cómo lo conseguiste?", "storyHint": "¿Quién te lo dio, dónde, cómo? Unas frases bastan.", "name": "Tu nombre o Instagram", "nameHint": "Opcional. Te etiquetamos cuando lo publiquemos.", "consent": "Mis fotos y mi historia pueden publicarse en @lighterslegacy. Solo se muestra mi ciudad, nunca un lugar exacto.", "age": "Tengo 16 años o más.", "send": "Enviar", "sending": "Enviando…", "errNum": "Escribe un número del 1 al 1.000.", "errCode": "Escribe el código de 3 caracteres.", "errCodeWrong": "El número y el código no coinciden. Revisa la pegatina.", "errPhoto": "Añade al menos una foto.", "errReq": "Rellena esto, por favor.", "errConsent": "Marca esta casilla para que podamos publicarlo.", "errAge": "Tienes que tener 16 años o más para participar.", "errSend": "No funcionó. Revisa tu conexión e inténtalo de nuevo.", "doneTitle": "¡Gracias! El mechero #{n} está en el mapa.", "doneText": "Quédatelo unos días y luego pásaselo a alguien nuevo. Sigue su viaje aquí:", "doneEndTitle": "Descansa en paz, mechero #{n}.", "doneEndText": "Gracias por darle su última llama. Todo su viaje se publicará aquí:", "doneRefillTitle": "¡Héroe de la recarga! El mechero #{n} sigue vivo.", "doneRefillText": "Acabas de alargarle la vida. Te daremos un shoutout en @lighterslegacy y entrarás en el Hall of Flame.", "demo": "Vista previa: este formulario aún no está conectado. No se envió nada.", "again": "Registrar otro mechero", "imprint": "Aviso legal", "privacy": "Privacidad", "back": "Volver", "legalNote": "Los textos legales están en alemán, como exige la ley alemana.", "pending": "Revisaremos tu aviso y luego aparecerá en el mapa.", "jTitle": "El viaje hasta ahora", "kSeen": "mecheros vistos", "kActive": "siguen ardiendo", "kKm": "km recorridos", "kCountries": "países", "kRefills": "recargas", "hall": "Hall of Flame", "hTrip": "Viajes más largos", "hTripLine": "llevó el #{n} de {a} a {b}", "hFar": "Los que más viajaron", "hRefill": "Héroes de la recarga", "hRefillLine": "{c}× recargado", "hLong": "Los que más duran", "days": "días", "mapTitle": "Dónde están ahora", "empty": "Aún no hay avisos publicados. ¡El tuyo podría ser el primero!", "demoData": "Datos de ejemplo: así se verá.", "anon": "Alguien", "idLabel": "Número y código del mechero", "idHint": "Escribe lo que pone en la parte rosa de la pegatina, p. ej. 139-KTX.", "where": "¿Dónde lo encuentro?", "aNum": "número", "aCode": "código", "errId": "Escribe el número (1–1.000) y el código de 3 letras, p. ej. 139-KTX.", "checking": "Comprobando tu mechero…", "real": "¡Mechero auténtico! El #{n} es uno de los 1.000.", "fake": "No encontramos este mechero. Revisa número y código en la pegatina.", "vdemo": "Vista previa: aún no se comprobó con la base de datos."}, "fr": {"title": "Tu as trouvé un briquet. Raconte son histoire.", "intro": "Tu tiens l'un des 1 000 briquets numérotés qui voyagent dans le monde, de main en main. Dis-nous où il est maintenant et comment il est arrivé jusqu'à toi. Garde-le quelques jours, puis passe-le à quelqu'un de nouveau.", "step1": "Prends des photos", "step2": "Raconte son histoire", "step3": "Fais-le passer", "num": "Numéro du briquet", "code": "Code", "codeHint": "Le numéro et le code à 3 caractères sont sur la face rose de l'autocollant.", "statusQ": "Qu'est-ce qui lui arrive ?", "stMoving": "Quelqu'un me l'a donné et je vais le faire passer", "stFound": "Je l'ai trouvé quelque part", "stRefill": "Je l'ai rechargé, il continue !", "stEmpty": "Il n'a plus de gaz, son voyage est fini", "photo": "Photos du briquet", "photoHint": "Jusqu'à 5. Avec toi, ta main ou l'endroit où tu es.", "photoBtn": "Ajouter des photos", "photoMax": "5 photos maximum.", "remove": "Retirer la photo", "place": "Où es-tu ?", "placeHint": "Commence à taper ta ville et choisis-la dans la liste.", "city": "Ville", "country": "Pays", "story": "Comment l'as-tu eu ?", "storyHint": "Qui te l'a donné, où, comment ? Quelques phrases suffisent.", "name": "Ton nom ou Instagram", "nameHint": "Facultatif. On t'identifiera quand on le publiera.", "consent": "Mes photos et mon histoire peuvent être publiées sur @lighterslegacy. Seule ma ville est affichée, jamais un lieu précis.", "age": "J'ai 16 ans ou plus.", "send": "Envoyer", "sending": "Envoi…", "errNum": "Entre un numéro entre 1 et 1 000.", "errCode": "Entre le code à 3 caractères.", "errCodeWrong": "Le numéro et le code ne correspondent pas. Vérifie l'autocollant.", "errPhoto": "Ajoute au moins une photo.", "errReq": "Remplis ce champ, s'il te plaît.", "errConsent": "Coche cette case pour qu'on puisse le publier.", "errAge": "Il faut avoir 16 ans ou plus pour participer.", "errSend": "Ça n'a pas marché. Vérifie ta connexion et réessaie.", "doneTitle": "Merci ! Le briquet #{n} est sur la carte.", "doneText": "Garde-le quelques jours, puis passe-le à quelqu'un de nouveau. Suis son voyage ici :", "doneEndTitle": "Repose en paix, briquet #{n}.", "doneEndText": "Merci de lui avoir donné sa dernière flamme. Tout son voyage sera publié ici :", "doneRefillTitle": "Héros de la recharge ! Le briquet #{n} continue.", "doneRefillText": "Tu viens de prolonger sa vie. Tu auras un shoutout sur @lighterslegacy et une place dans le Hall of Flame.", "demo": "Aperçu : ce formulaire n'est pas encore connecté. Rien n'a été envoyé.", "again": "Signaler un autre briquet", "imprint": "Mentions légales", "privacy": "Confidentialité", "back": "Retour", "legalNote": "Les textes juridiques sont en allemand, comme l'exige la loi allemande.", "pending": "On vérifie rapidement ton signalement, puis il apparaîtra sur la carte.", "jTitle": "Le voyage jusqu'ici", "kSeen": "briquets repérés", "kActive": "brûlent encore", "kKm": "km parcourus", "kCountries": "pays", "kRefills": "recharges", "hall": "Hall of Flame", "hTrip": "Plus longs trajets", "hTripLine": "a emmené le #{n} de {a} à {b}", "hFar": "Les plus grands voyageurs", "hRefill": "Héros de la recharge", "hRefillLine": "{c}× rechargé", "hLong": "Brûlent le plus longtemps", "days": "jours", "mapTitle": "Où ils sont maintenant", "empty": "Pas encore de signalements publiés. Le tien pourrait être le premier !", "demoData": "Données d'exemple : voilà à quoi ça ressemblera.", "anon": "Quelqu'un", "idLabel": "Numéro et code du briquet", "idHint": "Tape ce qui est écrit sur la face rose de l'autocollant, ex. 139-KTX.", "where": "Où je le trouve ?", "aNum": "numéro", "aCode": "code", "errId": "Entre le numéro (1–1 000) et le code à 3 lettres, ex. 139-KTX.", "checking": "On vérifie ton briquet…", "real": "Vrai briquet ! Le #{n} est l'un des 1 000.", "fake": "On ne trouve pas ce briquet. Vérifie le numéro et le code sur l'autocollant.", "vdemo": "Aperçu : pas encore vérifié avec la base de données."}, "it": {"title": "Hai trovato un accendino. Racconta la sua storia.", "intro": "Hai in mano uno dei 1.000 accendini numerati che viaggiano per il mondo, di mano in mano. Dicci dov'è adesso e come è arrivato a te. Poi tienilo qualche giorno e passalo a qualcuno di nuovo.", "step1": "Scatta foto", "step2": "Racconta la storia", "step3": "Passalo", "num": "Numero dell'accendino", "code": "Codice", "codeHint": "Il numero e il codice di 3 caratteri sono sulla parte rosa dell'adesivo.", "statusQ": "Cosa gli sta succedendo?", "stMoving": "Me l'ha dato qualcuno e lo passerò", "stFound": "L'ho trovato in giro", "stRefill": "L'ho ricaricato, vive ancora!", "stEmpty": "Il gas è finito, il suo viaggio è concluso", "photo": "Foto dell'accendino", "photoHint": "Fino a 5. Con te, la tua mano o il posto dove sei.", "photoBtn": "Aggiungi foto", "photoMax": "Massimo 5 foto.", "remove": "Rimuovi foto", "place": "Dove sei?", "placeHint": "Inizia a scrivere la tua città e sceglila dalla lista.", "city": "Città", "country": "Paese", "story": "Come l'hai avuto?", "storyHint": "Chi te l'ha dato, dove, come? Bastano poche frasi.", "name": "Il tuo nome o Instagram", "nameHint": "Facoltativo. Ti tagghiamo quando lo pubblichiamo.", "consent": "Le mie foto e la mia storia possono essere pubblicate su @lighterslegacy. Si vede solo la mia città, mai un luogo preciso.", "age": "Ho almeno 16 anni.", "send": "Invia", "sending": "Invio…", "errNum": "Inserisci un numero da 1 a 1.000.", "errCode": "Inserisci il codice di 3 caratteri.", "errCodeWrong": "Numero e codice non corrispondono. Controlla l'adesivo.", "errPhoto": "Aggiungi almeno una foto.", "errReq": "Compila questo campo.", "errConsent": "Spunta questa casella così possiamo pubblicarlo.", "errAge": "Devi avere almeno 16 anni per partecipare.", "errSend": "Non ha funzionato. Controlla la connessione e riprova.", "doneTitle": "Grazie! L'accendino #{n} è sulla mappa.", "doneText": "Tienilo qualche giorno, poi passalo a qualcuno di nuovo. Segui il suo viaggio qui:", "doneEndTitle": "Riposa in pace, accendino #{n}.", "doneEndText": "Grazie per avergli dato l'ultima fiamma. Tutto il suo viaggio sarà pubblicato qui:", "doneRefillTitle": "Eroe della ricarica! L'accendino #{n} vive ancora.", "doneRefillText": "Gli hai allungato la vita. Ti faremo uno shoutout su @lighterslegacy e entrerai nella Hall of Flame.", "demo": "Anteprima: questo modulo non è ancora collegato. Non è stato inviato nulla.", "again": "Segnala un altro accendino", "imprint": "Note legali", "privacy": "Privacy", "back": "Indietro", "legalNote": "I testi legali sono in tedesco, come richiesto dalla legge tedesca.", "pending": "Controlliamo velocemente la tua segnalazione, poi finirà sulla mappa.", "jTitle": "Il viaggio finora", "kSeen": "accendini avvistati", "kActive": "ancora accesi", "kKm": "km percorsi", "kCountries": "paesi", "kRefills": "ricariche", "hall": "Hall of Flame", "hTrip": "Viaggi più lunghi", "hTripLine": "ha portato il #{n} da {a} a {b}", "hFar": "I più viaggiatori", "hRefill": "Eroi della ricarica", "hRefillLine": "{c}× ricaricato", "hLong": "Accesi più a lungo", "days": "giorni", "mapTitle": "Dove sono adesso", "empty": "Ancora nessuna segnalazione pubblicata. La tua potrebbe essere la prima!", "demoData": "Dati di esempio: ecco come apparirà.", "anon": "Qualcuno", "idLabel": "Numero e codice dell'accendino", "idHint": "Scrivi quello che c'è sulla parte rosa dell'adesivo, es. 139-KTX.", "where": "Dove lo trovo?", "aNum": "numero", "aCode": "codice", "errId": "Inserisci il numero (1–1.000) e il codice di 3 lettere, es. 139-KTX.", "checking": "Stiamo controllando il tuo accendino…", "real": "Accendino autentico! Il #{n} è uno dei 1.000.", "fake": "Non troviamo questo accendino. Controlla numero e codice sull'adesivo.", "vdemo": "Anteprima: non ancora controllato con il database."}, "pt": {"title": "Encontraste um isqueiro. Conta a história dele.", "intro": "Tens na mão um dos 1.000 isqueiros numerados que viajam pelo mundo, de mão em mão. Diz-nos onde está agora e como chegou até ti. Depois fica com ele uns dias e passa-o a alguém novo.", "step1": "Tira fotos", "step2": "Conta a história", "step3": "Passa-o", "num": "Número do isqueiro", "code": "Código", "codeHint": "O número e o código de 3 caracteres estão na parte rosa do autocolante.", "statusQ": "O que se passa com ele?", "stMoving": "Alguém mo deu e vou passá-lo", "stFound": "Encontrei-o por aí", "stRefill": "Recarreguei-o, continua vivo!", "stEmpty": "Ficou sem gás, a viagem acabou", "photo": "Fotos do isqueiro", "photoHint": "Até 5. Contigo, a tua mão ou o sítio onde estás.", "photoBtn": "Adicionar fotos", "photoMax": "Máximo 5 fotos.", "remove": "Remover foto", "place": "Onde estás?", "placeHint": "Começa a escrever a tua cidade e escolhe-a na lista.", "city": "Cidade", "country": "País", "story": "Como o conseguiste?", "storyHint": "Quem to deu, onde, como? Umas frases chegam.", "name": "O teu nome ou Instagram", "nameHint": "Opcional. Marcamos-te quando publicarmos.", "consent": "As minhas fotos e a minha história podem ser publicadas em @lighterslegacy. Só é mostrada a minha cidade, nunca um sítio exato.", "age": "Tenho 16 anos ou mais.", "send": "Enviar", "sending": "A enviar…", "errNum": "Escreve um número de 1 a 1.000.", "errCode": "Escreve o código de 3 caracteres.", "errCodeWrong": "O número e o código não coincidem. Vê o autocolante.", "errPhoto": "Adiciona pelo menos uma foto.", "errReq": "Preenche isto, por favor.", "errConsent": "Marca esta caixa para podermos publicar.", "errAge": "Tens de ter 16 anos ou mais para participar.", "errSend": "Não funcionou. Verifica a ligação e tenta de novo.", "doneTitle": "Obrigado! O isqueiro #{n} está no mapa.", "doneText": "Fica com ele uns dias e depois passa-o a alguém novo. Segue a viagem dele aqui:", "doneEndTitle": "Descansa em paz, isqueiro #{n}.", "doneEndText": "Obrigado por lhe dares a última chama. Toda a viagem dele será publicada aqui:", "doneRefillTitle": "Herói da recarga! O isqueiro #{n} continua vivo.", "doneRefillText": "Acabaste de lhe prolongar a vida. Vais ter um shoutout em @lighterslegacy e um lugar no Hall of Flame.", "demo": "Pré-visualização: este formulário ainda não está ligado. Nada foi enviado.", "again": "Registar outro isqueiro", "imprint": "Informação legal", "privacy": "Privacidade", "back": "Voltar", "legalNote": "Os textos legais estão em alemão, como exige a lei alemã.", "pending": "Vamos verificar rapidamente o teu registo e depois aparece no mapa.", "jTitle": "A viagem até agora", "kSeen": "isqueiros avistados", "kActive": "ainda acesos", "kKm": "km percorridos", "kCountries": "países", "kRefills": "recargas", "hall": "Hall of Flame", "hTrip": "Viagens mais longas", "hTripLine": "levou o #{n} de {a} para {b}", "hFar": "Os que mais viajaram", "hRefill": "Heróis da recarga", "hRefillLine": "{c}× recarregado", "hLong": "Acesos há mais tempo", "days": "dias", "mapTitle": "Onde estão agora", "empty": "Ainda não há registos publicados. O teu pode ser o primeiro!", "demoData": "Dados de exemplo: é assim que vai ficar.", "anon": "Alguém", "idLabel": "Número e código do isqueiro", "idHint": "Escreve o que está na parte rosa do autocolante, ex. 139-KTX.", "where": "Onde encontro isto?", "aNum": "número", "aCode": "código", "errId": "Escreve o número (1–1.000) e o código de 3 letras, ex. 139-KTX.", "checking": "A verificar o teu isqueiro…", "real": "Isqueiro verdadeiro! O #{n} é um dos 1.000.", "fake": "Não encontramos este isqueiro. Verifica o número e o código no autocolante.", "vdemo": "Pré-visualização: ainda não verificado na base de dados."}};
+var LANGS = ["en","de","es","fr","it","pt"];
+var NAMES = {en:"EN",de:"DE",es:"ES",fr:"FR",it:"IT",pt:"PT"};
+var FULL = {en:"English",de:"Deutsch",es:"Español",fr:"Français",it:"Italiano",pt:"Português"};
+var lang = "en", photos = [], place = null, gReady = false;
+function $(id){return document.getElementById(id)}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+
+function pickLang(){
+  var saved = store("ll-lang"); if (saved && T[saved]) return saved;
+  return "en";   // start in English; country lookup below may switch it
+}
+var COUNTRY_LANG = {DE:"de",AT:"de",CH:"de",LI:"de",LU:"de",
+  ES:"es",MX:"es",AR:"es",CO:"es",CL:"es",PE:"es",VE:"es",EC:"es",GT:"es",CU:"es",BO:"es",DO:"es",HN:"es",PY:"es",SV:"es",NI:"es",CR:"es",PA:"es",UY:"es",
+  FR:"fr",BE:"fr",MC:"fr",SN:"fr",CI:"fr",CM:"fr",ML:"fr",BF:"fr",NE:"fr",TG:"fr",BJ:"fr",MG:"fr",
+  IT:"it",SM:"it",VA:"it",
+  PT:"pt",BR:"pt",AO:"pt",MZ:"pt",CV:"pt",GW:"pt",ST:"pt",TL:"pt"};
+function langFromLocation(){
+  if (store("ll-lang")) return;   // the visitor already picked a language
+  function apply(cc){ var l=COUNTRY_LANG[String(cc||"").toUpperCase()]; if(l && l!==lang && !store("ll-lang")){ lang=l; render(); if(JDATA && !$("journey").hidden) drawJourney(); } }
+  fetch("https://api.country.is/").then(function(r){ return r.json(); }).then(function(j){ apply(j.country); })
+    .catch(function(){ fetch("https://get.geojs.io/v1/ip/country.json").then(function(r){ return r.json(); }).then(function(j){ apply(j.country); }).catch(function(){}); });
+}
+function fillCountries(){
+  var dl = $("countries"); dl.innerHTML = "";
+  var codes = "AD AE AF AG AL AM AO AR AT AU AZ BA BB BD BE BF BG BH BI BJ BN BO BR BS BT BW BY BZ CA CD CF CG CH CI CL CM CN CO CR CU CV CY CZ DE DJ DK DM DO DZ EC EE EG ER ES ET FI FJ FR GA GB GD GE GH GM GN GQ GR GT GW GY HN HR HT HU ID IE IL IN IQ IR IS IT JM JO JP KE KG KH KM KN KR KW KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MG MK ML MM MN MR MT MU MV MW MX MY MZ NA NE NG NI NL NO NP NZ OM PA PE PG PH PK PL PT PY QA RO RS RU RW SA SB SC SD SE SG SI SK SL SM SN SO SR SS ST SV SY SZ TD TG TH TJ TL TM TN TO TR TT TW TZ UA UG US UY UZ VA VC VE VN VU WS YE ZA ZM ZW".split(" ");
+  var dn = null; try { dn = new Intl.DisplayNames([lang], {type:"region"}); } catch(e){}
+  var list = codes.map(function(c){ return dn ? dn.of(c) : c; }).sort(function(a,b){return a.localeCompare(b, lang)});
+  list.forEach(function(n){ var o=document.createElement("option"); o.value=n; dl.appendChild(o); });
+}
+function render(){
+  var t = T[lang]; document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i]").forEach(function(el){ var k=el.getAttribute("data-i"); if(t[k]!==undefined) el.textContent=t[k]; });
+  document.querySelectorAll(".note").forEach(function(el){ el.hidden = !t.legalNote; });
+  document.querySelectorAll("#lang button").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.l===lang?"true":"false"); });
+  document.querySelectorAll(".ph button").forEach(function(b){ b.setAttribute("aria-label", t.remove); });
+  fillCountries();
+}
+function buildLang(){
+  LANGS.forEach(function(l){
+    var b=document.createElement("button"); b.type="button"; b.dataset.l=l; b.textContent=NAMES[l];
+    b.setAttribute("aria-label",FULL[l]); b.setAttribute("lang",l);
+    b.addEventListener("click",function(){ lang=l; store("ll-lang",l); render(); if(JDATA && !$("journey").hidden) drawJourney(); });
+    $("lang").appendChild(b);
+  });
+}
+function prefill(){
+  var n=null; try{ n=new URLSearchParams(location.search).get("n"); }catch(e){}
+  if(n && +n>=1 && +n<=MAXN) $("idIn").value=String(+n)+"-";
+}
+function route(){
+  var h = location.hash.replace(/^#/,"");
+  var legal = (h==="impressum"||h==="datenschutz");
+  $("impressum").hidden = h!=="impressum"; $("datenschutz").hidden = h!=="datenschutz";
+  if (legal) { $("formView").hidden = true; $("doneView").hidden = true; $("journey").hidden = true; window.scrollTo(0,0); }
+  else if ($("doneView").hidden) { $("formView").hidden = false; }
+}
+document.addEventListener("click", function(e){
+  var a = e.target.closest && e.target.closest(".backlink");
+  if (a) { e.preventDefault(); location.hash = ""; route(); }
+});
+
+/* ---- photos ---- */
+function drawPhotos(){
+  var box=$("photos"); box.querySelectorAll(".ph").forEach(function(n){n.remove()});
+  photos.forEach(function(p,i){
+    var d=document.createElement("div"); d.className="ph";
+    var img=document.createElement("img"); img.alt=""; img.src=p.url; d.appendChild(img);
+    var b=document.createElement("button"); b.type="button"; b.textContent="×"; b.setAttribute("aria-label",T[lang].remove);
+    b.addEventListener("click",function(){ URL.revokeObjectURL(p.url); photos.splice(i,1); drawPhotos(); });
+    d.appendChild(b); box.insertBefore(d,$("addph"));
+  });
+  $("addph").hidden = photos.length>=5;
+}
+$("photo").addEventListener("change",function(){
+  var files=[].slice.call(this.files||[]); var over=false;
+  files.forEach(function(f){ if(photos.length<5){ photos.push({file:f,url:URL.createObjectURL(f)}); } else over=true; });
+  this.value=""; drawPhotos(); showErr("photo", false);
+  if(over){ $("err-photo").textContent=T[lang].photoMax; $("err-photo").classList.add("show"); }
+});
+function toDataUrl(blob){ return new Promise(function(res,rej){ var fr=new FileReader(); fr.onload=function(){res(fr.result)}; fr.onerror=rej; fr.readAsDataURL(blob); }); }
+function shrink(file){
+  return new Promise(function(res){
+    var img=new Image(); img.onload=function(){
+      var m=1280, s=Math.min(1, m/Math.max(img.width,img.height));
+      var c=document.createElement("canvas"); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      c.toBlob(function(b){ res(b||file); },"image/jpeg",0.8);
+    }; img.onerror=function(){ res(file); }; img.src=URL.createObjectURL(file);
+  });
+}
+
+/* ---- Google place search (only when a key is set and the page is on its own domain) ---- */
+function loadGoogle(){
+  if(!CONFIG.googleMapsKey) return;
+  window.__llPlaces = initPlaces;
+  var s=document.createElement("script");
+  s.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(CONFIG.googleMapsKey)+"&v=weekly&loading=async&callback=__llPlaces";
+  s.async=true; s.onerror=function(){}; document.head.appendChild(s);
+}
+async function initPlaces(){
+  try{
+    var lib = await google.maps.importLibrary("places");
+    var el = new lib.PlaceAutocompleteElement({ includedPrimaryTypes:["(cities)"] });
+    el.setAttribute("aria-labelledby","place-lbl");
+    el.addEventListener("gmp-select", async function(ev){
+      var p = ev.placePrediction.toPlace();
+      await p.fetchFields({ fields:["displayName","addressComponents","location"] });
+      var city="", country="";
+      (p.addressComponents||[]).forEach(function(c){
+        if(c.types.indexOf("locality")>-1 || (!city && c.types.indexOf("postal_town")>-1)) city=c.longText;
+        if(c.types.indexOf("country")>-1) country=c.longText;
+      });
+      if(!city) city = (p.displayName||"");
+      place = { city:city, country:country, lat: p.location ? +p.location.lat().toFixed(2) : null, lng: p.location ? +p.location.lng().toFixed(2) : null };
+      $("city").value=city; $("country").value=country;
+      $("picked").textContent = "✓ " + city + (country ? ", " + country : "");
+      showErr("place", false);
+    });
+    $("gplace").appendChild(el); $("gplace").hidden=false; $("manualPlace").hidden=true; gReady=true;
+  }catch(e){ /* keep manual fields */ }
+}
+
+
+
+/* ---- number + code input (one field, 139-KTX) ---- */
+function parseId(raw){
+  raw=String(raw||"").toUpperCase();
+  var m=raw.match(/^\s*(\d{0,4})/), digits=m?m[1]:"", rest=raw.slice(m?m[0].length:0);
+  var nx=/^[\s\-–]?(\d)/.exec(rest);
+  if(digits.length===3 && nx && +(digits+nx[1])<=MAXN){ digits=digits+nx[1]; rest=rest.slice(nx[0].length); }
+  if(digits.length===4 && +digits>MAXN){ digits=digits.slice(0,3); }
+  var dash=/^[\s\-–]/.test(rest);
+  var letters=digits ? rest.replace(/[^A-Z]/g,"").slice(0,3) : "";
+  var codeMode = digits.length>0 && (letters.length>0 || dash || digits.length>=3);
+  return {digits:digits, letters:letters, codeMode:codeMode};
+}
+function normId(p){ return p.digits + (p.codeMode?"-":"") + p.letters; }
+function drawOtp(){
+  var inp=$("idIn"), p=parseId(inp.value), focus=document.activeElement===inp, h="";
+  var nBoxes = p.digits.length===4 ? 4 : 3;
+  for(var i=0;i<nBoxes;i++){
+    var ch=p.digits[i]||"", act=focus && !p.codeMode && i===p.digits.length;
+    h+='<span class="bx'+(ch?' filled':'')+(act?' act':'')+(spinning?' spin':'')+'"><span>'+ch+'</span></span>';
+  }
+  h+='<span class="dash'+(p.codeMode?' on':'')+'">–</span>';
+  for(var j=0;j<3;j++){ var c=p.letters[j]||"", a=focus && p.codeMode && j===p.letters.length;
+    h+='<span class="bx code'+(c?' filled':'')+(a?' act':'')+(spinning?' spin':'')+'"><span>'+c+'</span></span>'; }
+  $("otpBoxes").innerHTML=h;
+}
+$("idIn").addEventListener("input",function(){
+  var p=parseId(this.value), v=normId(p);
+  if(this.value!==v){ this.value=v; }
+  try{ this.setSelectionRange(v.length,v.length); }catch(e){}
+  $("otp").classList.remove("invalid"); showErr("id",false); drawOtp(); maybeVerify();
+});
+$("idIn").addEventListener("keydown",function(e){
+  if(e.key==="Backspace" && /-$/.test(this.value)){ e.preventDefault(); this.value=this.value.replace(/-$/,"").slice(0,-1); VER={key:"",ok:null}; verifyBox("",""); drawOtp(); }
+});
+["focus","blur","click","keyup"].forEach(function(ev){ $("idIn").addEventListener(ev,function(){ var v=this.value; try{ this.setSelectionRange(v.length,v.length); }catch(e){} drawOtp(); }); });
+function getId(){ var p=parseId($("idIn").value); return {n:+p.digits, code:p.letters}; }
+var spinning=false, VER={key:"",ok:null};
+function verifyBox(cls,txt){ var v=$("verify"); v.className="verify "+cls; v.textContent=txt; v.hidden=!txt; }
+function maybeVerify(){
+  var id=getId(), key=id.n+"-"+id.code;
+  if(!(id.n>=1&&id.n<=MAXN&&/^[A-Z]{3}$/.test(id.code))){ VER={key:"",ok:null}; verifyBox("",""); return; }
+  if(key===VER.key) return;
+  VER={key:key,ok:null}; runVerify(id,key);
+}
+async function runVerify(id,key){
+  var t=T[lang], inp=$("idIn"), chars="ABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
+  verifyBox("wait",t.checking); spinning=true; drawOtp();
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches, timer=null;
+  if(!reduce) timer=setInterval(function(){ document.querySelectorAll("#otpBoxes .bx.spin > span").forEach(function(s){ s.textContent=chars[Math.floor(Math.random()*chars.length)]; }); },60);
+  var started=Date.now(), ok=null, demoMode=!LIVE;
+  try{
+    if(demoMode) ok=true;
+    else{ var r=await sb("/rest/v1/rpc/check_code",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({n:id.n,c:id.code})}); ok=r.ok ? (await r.json())===true : null; }
+  }catch(e){ ok=null; }
+  var wait=Math.max(0,1100-(Date.now()-started)); await new Promise(function(res){ setTimeout(res,wait); });
+  if(timer) clearInterval(timer); spinning=false;
+  if(VER.key!==key) { drawOtp(); return; }
+  VER.ok=ok; drawOtp();
+  if(ok===true){ verifyBox("ok", t.real.replace("{n}",id.n) + (demoMode?" "+t.vdemo:"")); $("otp").classList.add("real"); setTimeout(function(){ $("otp").classList.remove("real"); },900); }
+  else if(ok===false){ verifyBox("bad", t.fake); $("otp").classList.add("invalid","shake"); setTimeout(function(){ $("otp").classList.remove("shake"); },500); }
+  else { verifyBox("",""); }
+}
+
+/* ---- journey + Hall of Flame (shown after sending) ---- */
+var JDATA=null, JDEMO=false;
+function hav(a,b){ if(a.lat==null||b.lat==null) return 0; var R=6371,r=Math.PI/180,dA=(b.lat-a.lat)*r,dO=(b.lng-a.lng)*r;
+  var h=Math.sin(dA/2)*Math.sin(dA/2)+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dO/2)*Math.sin(dO/2); return 2*R*Math.asin(Math.sqrt(h)); }
+function demoJourney(){
+  var C=[["Hamburg","Germany",53.55,9.99],["Berlin","Germany",52.52,13.4],["Amsterdam","Netherlands",52.37,4.9],["Paris","France",48.86,2.35],["Barcelona","Spain",41.39,2.17],["Lisbon","Portugal",38.72,-9.14],["London","UK",51.51,-0.13],["Sydney","Australia",-33.87,151.21],["Bangkok","Thailand",13.76,100.5],["New York","USA",40.71,-74]];
+  var N=["Lisa","Tom","Mara","Jonas","Ali","Sophie","Ben","Emma","Noah",null], seed=3, out=[], t0=Date.now()-90*864e5;
+  function r(){ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; }
+  for(var n=1;n<=120;n++){ var c=C[Math.floor(r()*4)], t=t0+r()*20*864e5, k=1+Math.floor(r()*5);
+    for(var i=0;i<k;i++){ if(i){ c=r()<.75?C[Math.floor(r()*7)]:C[7+Math.floor(r()*3)]; t+=(2+r()*12)*864e5; } if(t>Date.now()) break;
+      var st=i===k-1&&r()<.15?"empty":(r()<.2?"refilled":"moving");
+      out.push({number:n,status:st,city:c[0],country:c[1],lat:c[2],lng:c[3],name:N[Math.floor(r()*N.length)],created_at:new Date(t).toISOString()}); if(st==="empty") break; } }
+  return out.sort(function(a,b){return new Date(a.created_at)-new Date(b.created_at)});
+}
+async function loadJourney(){
+  try{
+    if(!LIVE){ JDATA=demoJourney(); JDEMO=true; }
+    else { var r=await sb("/rest/v1/rpc/public_reports",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"}); JDATA=r.ok?await r.json():[]; JDEMO=false; }
+  }catch(e){ JDATA=[]; }
+  drawJourney(); $("journey").hidden=false;
+}
+function nf(x){ try{ return Math.round(x).toLocaleString(lang); }catch(e){ return String(Math.round(x)); } }
+function countUp(el,to,suffix){
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce||!to){ el.textContent=nf(to)+(suffix||""); return; }
+  var t0=null; function step(ts){ if(!t0) t0=ts; var p=Math.min(1,(ts-t0)/1400), e=1-Math.pow(1-p,3); el.textContent=nf(to*e)+(suffix||""); if(p<1) requestAnimationFrame(step); }
+  requestAnimationFrame(step);
+}
+function drawJourney(){
+  var t=T[lang], R=JDATA||[]; $("jdemo").hidden=!JDEMO;
+  var by={}; R.forEach(function(r){ (by[r.number]=by[r.number]||[]).push(r); });
+  var trips=[], far=[], long=[], refillBy={}, totalKm=0, active=0, countries={};
+  Object.keys(by).forEach(function(n){
+    var rs=by[n], d=0;
+    for(var i=1;i<rs.length;i++){ var k=hav(rs[i-1],rs[i]); d+=k; if(k>1) trips.push({n:n,km:k,name:rs[i].name,a:rs[i-1].city,b:rs[i].city}); }
+    totalKm+=d; far.push({n:n,km:d,city:rs[rs.length-1].city});
+    var end=rs[rs.length-1].status==="empty"; if(!end) active++;
+    var life=Math.round(((end?new Date(rs[rs.length-1].created_at):new Date())-new Date(rs[0].created_at))/864e5);
+    long.push({n:n,days:life,city:rs[rs.length-1].city,end:end});
+  });
+  R.forEach(function(r){ if(r.country) countries[r.country]=1; if(r.status==="refilled"){ var k=r.name||t.anon; refillBy[k]=(refillBy[k]||0)+1; } });
+  var refills=R.filter(function(r){return r.status==="refilled"}).length;
+  var K=[[Object.keys(by).length," / 1,000",t.kSeen],[active,"",t.kActive],[totalKm,"",t.kKm],[Object.keys(countries).length,"",t.kCountries],[refills,"",t.kRefills]];
+  $("jk").innerHTML=K.map(function(k,i){return '<div><b id="jk'+i+'">0</b><span>'+k[2]+'</span></div>'}).join("");
+  K.forEach(function(k,i){ countUp($("jk"+i),k[0],k[1]); });
+  function board(id,items,fmt){
+    var box=$(id).querySelector(".ents"); $(id).classList.remove("go");
+    var top=items.slice(0,5), max=top.length?top[0].v:1;
+    box.innerHTML=top.map(function(it,i){ var f=fmt(it); return '<div class="entry'+(i===0?' first':'')+'" style="transition-delay:'+(i*0.12)+'s"><div class="bar" data-w="'+Math.max(8,it.v/max*100)+'" style="transition-delay:'+(0.2+i*0.12)+'s"></div><div class="in"><span class="rk">'+(i+1)+'</span><span class="tx"><b>'+esc(f[0])+'</b>'+esc(f[1])+'</span><span class="vl">'+esc(f[2])+'</span></div></div>'; }).join("");
+    $(id).hidden=!top.length; observe($(id));
+  }
+  trips.sort(function(a,b){return b.km-a.km}); far.sort(function(a,b){return b.km-a.km}); long.sort(function(a,b){return b.days-a.days});
+  board("bTrip",trips.map(function(x){x.v=x.km;return x}),function(x){return [x.name||t.anon, t.hTripLine.replace("{n}",x.n).replace("{a}",x.a).replace("{b}",x.b), nf(x.km)+" km"]});
+  board("bFar",far.filter(function(x){return x.km>0}).map(function(x){x.v=x.km;return x}),function(x){return ["#"+x.n, x.city||"", nf(x.km)+" km"]});
+  var rb=Object.keys(refillBy).map(function(k){return {name:k,v:refillBy[k]}}).sort(function(a,b){return b.v-a.v});
+  board("bRefill",rb,function(x){return [x.name, t.hRefillLine.replace("{c}",x.v), x.v+"×"]});
+  board("bLong",long.map(function(x){x.v=x.days;return x}),function(x){return ["#"+x.n, x.city||"", x.days+" "+t.days]});
+  $("jempty").hidden=R.length>0;
+  drawJMap(by);
+}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var io=null;
+function observe(el){
+  function go(b){ b.classList.add("go"); b.querySelectorAll(".bar").forEach(function(x){ x.style.width=x.dataset.w+"%"; }); }
+  if(!("IntersectionObserver" in window)){ go(el); return; }
+  if(!io) io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ go(e.target); io.unobserve(e.target); } }); },{threshold:.25});
+  io.observe(el);
+}
+var jmap=null;
+function drawJMap(by){
+  function ok(){ if(typeof L==="undefined") return false; var d=document.createElement("div"); d.className="leaflet-pane"; document.body.appendChild(d); var a=getComputedStyle(d).position==="absolute"; d.remove(); return a; }
+  function draw(){
+    if(!ok()) return; $("jmapWrap").hidden=false;
+    if(!jmap){ jmap=L.map("jmap",{worldCopyJump:true,scrollWheelZoom:false}).setView([30,10],2);
+      L.tileLayer("https://{s}.basemap.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{attribution:"&copy; OpenStreetMap, &copy; CARTO",maxZoom:10}).addTo(jmap); }
+    Object.keys(by).forEach(function(n){ var pts=by[n].filter(function(r){return r.lat!=null}).map(function(r){return [r.lat,r.lng]}); if(!pts.length) return;
+      if(pts.length>1) L.polyline(pts,{color:"#FF2E93",weight:2,opacity:.5}).addTo(jmap);
+      L.circleMarker(pts[pts.length-1],{radius:5,color:"#000",weight:1,fillColor:"#E8FF00",fillOpacity:1}).bindTooltip("#"+n).addTo(jmap); });
+    setTimeout(function(){ jmap.invalidateSize(); },100);
+  }
+  if(typeof L!=="undefined"){ draw(); return; }
+  var c=document.createElement("link"); c.rel="stylesheet"; c.href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"; document.head.appendChild(c);
+  var s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"; s.onload=function(){ setTimeout(draw,300); }; document.head.appendChild(s);
+}
+
+
+/* ---- free city search (Open-Meteo geocoding) when no Google key is set ---- */
+var CITY_HITS={}, cityTimer=null;
+function cityKey(r){ return r.name+(r.admin1&&r.admin1!==r.name?", "+r.admin1:"")+", "+(r.country||""); }
+$("city").addEventListener("input",function(){
+  var q=this.value.trim(); place=null; $("picked").textContent="";
+  if(CITY_HITS[q]){ var r=CITY_HITS[q]; this.value=r.name; $("country").value=r.country||"";
+    place={city:r.name,country:r.country||"",lat:+r.latitude.toFixed(2),lng:+r.longitude.toFixed(2)};
+    $("picked").textContent="✓ "+cityKey(r); showErr("place",false); return; }
+  clearTimeout(cityTimer); if(q.length<2) return;
+  cityTimer=setTimeout(function(){
+    fetch("https://geocoding-api.open-meteo.com/v1/search?count=6&format=json&language="+lang+"&name="+encodeURIComponent(q))
+      .then(function(r){return r.json()}).then(function(j){
+        var dl=$("cityList"); dl.innerHTML="";
+        (j.results||[]).forEach(function(r){ var k=cityKey(r); CITY_HITS[k]=r; var o=document.createElement("option"); o.value=k; dl.appendChild(o); });
+      }).catch(function(){});
+  },250);
+});
+async function geocodeFallback(city,country){
+  try{
+    var j=await fetch("https://geocoding-api.open-meteo.com/v1/search?count=5&format=json&language="+lang+"&name="+encodeURIComponent(city)).then(function(r){return r.json()});
+    var hits=j.results||[], c=(country||"").toLowerCase();
+    var r=hits.find(function(h){ return c && (String(h.country||"").toLowerCase()===c || String(h.country_code||"").toLowerCase()===c); })||hits[0];
+    return r?{lat:+r.latitude.toFixed(2),lng:+r.longitude.toFixed(2)}:null;
+  }catch(e){ return null; }
+}
+
+/* ---- validation + submit ---- */
+function showErr(id,on){
+  var e=$("err-"+id); if(!e) return on;
+  e.classList.toggle("show",on);
+  var map={story:"story"}; var inp=map[id]&&$(map[id]); if(id==="id") $("otp").classList.toggle("invalid",on);
+  if(inp){ inp.classList.toggle("invalid",on); inp.setAttribute("aria-invalid",on?"true":"false"); }
+  return on;
+}
+function validate(){
+  var t=T[lang], bad=false, first=null;
+  function chk(cond,id,focusEl){ var e=showErr(id,cond); if(e&&!first) first=focusEl; bad=bad||e; }
+  var id=getId();
+  $("err-id").textContent=t.errId;
+  chk(!(id.n>=1&&id.n<=MAXN&&/^[A-Z]{3}$/.test(id.code)),"id",$("idIn"));
+  $("err-photo").textContent=t.errPhoto;
+  chk(!photos.length,"photo",$("photo"));
+  var haveCity = gReady ? !!place : ($("city").value.trim() && $("country").value.trim());
+  chk(!haveCity,"place",gReady?$("gplace").firstChild:$("city"));
+  chk(!$("story").value.trim(),"story",$("story"));
+  chk(!$("consent").checked,"consent",$("consent"));
+  chk(!$("age").checked,"age",$("age"));
+  if(first && first.focus) first.focus();
+  return !bad;
+}
+function done(n,status,demo){
+  var t=T[lang], end=status==="empty", ref=status==="refilled";
+  $("doneTitle").textContent=(end?t.doneEndTitle:ref?t.doneRefillTitle:t.doneTitle).replace("{n}",n);
+  $("doneText").textContent=end?t.doneEndText:ref?t.doneRefillText:t.doneText;
+  $("demoNote").hidden=!demo; $("formView").hidden=true; $("doneView").hidden=false; window.scrollTo(0,0);
+  loadJourney();
+}
+$("form").addEventListener("submit", async function(ev){
+  ev.preventDefault(); var t=T[lang]; $("err-send").classList.remove("show");
+  if(!validate()) return;
+  var idv=getId(), n=idv.n, code=idv.code;
+  if(VER.key===n+"-"+code && VER.ok===false){ $("err-id").textContent=t.errCodeWrong; showErr("id",true); $("idIn").focus(); return; }
+  var status=(document.querySelector("input[name=status]:checked")||{}).value||"moving";
+  if(!LIVE){ done(n,status,true); return; }
+  var btn=$("send"); btn.disabled=true; btn.textContent=t.sending;
+  try{
+    var ok=await sb("/rest/v1/rpc/check_code",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({n:n,c:code})}).then(function(r){return r.json()});
+    if(ok!==true){ $("err-id").textContent=t.errCodeWrong; showErr("id",true); $("idIn").focus(); throw "code"; }
+    var paths=[];
+    for(var i=0;i<photos.length;i++){
+      var blob=await shrink(photos[i].file);
+      var p=n+"/"+Date.now()+"-"+Math.random().toString(36).slice(2,10)+".jpg";
+      var up=await sb("/storage/v1/object/photos/"+p,{method:"POST",headers:{"Content-Type":"image/jpeg"},body:blob});
+      if(!up.ok) throw "upload"; paths.push(p);
+    }
+    if(!place || place.lat==null){ var cc=$("city").value.trim(), co=$("country").value.trim(); var g=await geocodeFallback(cc,co); place={city:(place&&place.city)||cc,country:(place&&place.country)||co,lat:g?g.lat:null,lng:g?g.lng:null}; }
+    var row={ number:n, code:code, status:status, photos:paths,
+      city: place.city || $("city").value.trim(), country: place.country || $("country").value.trim(),
+      lat: place?place.lat:null, lng: place?place.lng:null,
+      story:$("story").value.trim(), name:$("name").value.trim()||null, language:lang };
+    var r=await sb("/rest/v1/reports",{method:"POST",headers:{"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify(row)});
+    if(!r.ok) throw "insert";
+    done(n,status,false);
+  }catch(e){
+    if(e!=="code"){ $("err-send").textContent=t.errSend; $("err-send").classList.add("show"); }
+  }finally{ btn.disabled=false; btn.textContent=t.send; }
+});
+$("story").addEventListener("input",function(){ $("count").textContent=this.value.length; showErr("story",false); });
+["city","country"].forEach(function(id){ $(id).addEventListener("input",function(){ showErr("place",false); }); });
+["consent","age"].forEach(function(id){ $(id).addEventListener("change",function(){ showErr(id,false); }); });
+$("again").addEventListener("click",function(){
+  $("form").reset(); photos=[]; place=null; $("cityList").innerHTML=""; VER={key:"",ok:null}; verifyBox("",""); drawPhotos(); drawOtp(); $("picked").textContent=""; $("count").textContent="0";
+  $("doneView").hidden=true; $("journey").hidden=true; $("formView").hidden=false; window.scrollTo(0,0);
+});
+lang=pickLang(); buildLang(); render(); prefill(); drawOtp(); route(); langFromLocation();
+loadGoogle();
+window.addEventListener("hashchange",route);
+</script>
+</body>
+</html>
