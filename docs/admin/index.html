@@ -341,14 +341,15 @@ function drawMap(seen){
   if(!map){ map=window.L.map("map",{worldCopyJump:true}).setView([25,10],2);
     window.L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:12}).addTo(map); }
   if(layer) layer.remove(); layer=window.L.layerGroup().addTo(map);
-  var col={active:"#FF2E93",ended:"#9A9A9A",gone:"#FF7A3D"};
+  var col={active:"#FF2E93",ended:"#9A9A9A",gone:"#FF7A3D"}, all=[];
   seen.forEach(function(x){
     var pts=x.rs.filter(function(r){return r.lat!=null}).map(function(r){return [r.lat,r.lng]});
-    if(!pts.length) return;
+    if(!pts.length) return; all=all.concat(pts);
     if(pts.length>1) window.L.polyline(pts,{color:col[x.state],weight:2,opacity:.55}).addTo(layer);
     var m=window.L.circleMarker(pts[pts.length-1],{radius:6,color:"#000",weight:1,fillColor:col[x.state],fillOpacity:1}).addTo(layer);
     m.bindTooltip("#"+x.n+" · "+(x.lastR.city||"")); m.on("click",function(){ openDetail(x.n); });
   });
+  setTimeout(function(){ map.invalidateSize(); if(all.length) map.fitBounds(window.L.latLngBounds(all).pad(0.2),{maxZoom:7}); },150);
 }
 
 /* ---- demo data (clearly labelled in the UI) ---- */
