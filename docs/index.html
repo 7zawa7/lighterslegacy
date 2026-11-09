@@ -636,7 +636,7 @@ function drawJMap(by){
   function draw(){
     if(!ok()) return; $("jmapWrap").hidden=false;
     if(!jmap){ jmap=L.map("jmap",{worldCopyJump:true,scrollWheelZoom:false}).setView([30,10],2);
-      L.tileLayer("https://{s}.basemap.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{attribution:"&copy; OpenStreetMap, &copy; CARTO",maxZoom:10}).addTo(jmap); }
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{attribution:"&copy; OpenStreetMap, &copy; CARTO",maxZoom:10}).addTo(jmap); }
     Object.keys(by).forEach(function(n){ var pts=by[n].filter(function(r){return r.lat!=null}).map(function(r){return [r.lat,r.lng]}); if(!pts.length) return;
       if(pts.length>1) L.polyline(pts,{color:"#FF2E93",weight:2,opacity:.5}).addTo(jmap);
       L.circleMarker(pts[pts.length-1],{radius:5,color:"#000",weight:1,fillColor:"#E8FF00",fillOpacity:1}).bindTooltip("#"+n).addTo(jmap); });
